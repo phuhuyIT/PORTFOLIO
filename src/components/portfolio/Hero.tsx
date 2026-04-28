@@ -34,13 +34,18 @@ export const Hero = () => {
       const rect = hero.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      // distance from center, normalized to -1..1 by half-dimension
       const dx = (e.clientX - cx) / (rect.width / 2);
       const dy = (e.clientY - cy) / (rect.height / 2);
-      // distance magnitude 0..~1.4, clamp to 1
-      const dist = Math.min(1, Math.hypot(dx, dy));
+      let dist = Math.min(1, Math.hypot(dx, dy));
+      // Deadzone near center → snap to exact 0 so hands meet perfectly mirrored
+      const DEADZONE = 0.12;
+      if (dist < DEADZONE) {
+        dist = 0;
+      } else {
+        dist = (dist - DEADZONE) / (1 - DEADZONE);
+      }
       target.current.x = dist;
-      target.current.y = dy; // for slight vertical drift
+      target.current.y = dy * 0.5;
     };
 
     const onLeave = () => {
@@ -72,34 +77,47 @@ export const Hero = () => {
     current.current.x = 1;
     target.current.x = isTouch.current ? target.current.x : 1;
 
-    const animate = () => {
-      // lerp toward target for smoothness
-      const ease = 0.08;
-      current.current.x += (target.current.x - current.current.x) * ease;
-      current.current.y += (target.current.y - current.current.y) * ease;
+    let lastT = performance.now();
+    const animate = (now: number) => {
+      const dt = Math.min(64, now - lastT);
+      lastT = now;
+      // Frame-rate independent smoothing (critically-damped feel)
+      // Higher = snappier. ~12 gives smooth, responsive follow.
+      const k = 1 - Math.exp(-dt / 1000 * 12);
+
+      current.current.x += (target.current.x - current.current.x) * k;
+      current.current.y += (target.current.y - current.current.y) * k;
+
+      // Snap when extremely close to target to guarantee exact mirror at center
+      if (Math.abs(current.current.x - target.current.x) < 0.001) {
+        current.current.x = target.current.x;
+      }
 
       const dist = current.current.x; // 0 (center) .. 1 (far)
       const yDrift = current.current.y;
 
-      // Translate amounts (in % of hand width)
-      // dist=0 -> hands meet (translate 0)
-      // dist=1 -> hands pulled apart (translate -X for left, +X for right)
-      const pushX = dist * 18; // percent
-      const liftY = (1 - dist) * 1.5 + yDrift * 1.5; // small lift when meeting
-      const rotate = (1 - dist) * 2;
+      // dist=0 -> hands meet at exact mirrored midpoint (translate to 50% inward)
+      // dist=1 -> hands rest at their natural anchored position
+      // Hand container is 55vw wide and anchored at left/right edges with -2vw offset.
+      // To bring inner edges to screen center we need to translate by ~ (50% - container_edge).
+      // Empirically 50% inward translation lands the wrists at the centerline.
+      const MAX_PUSH = 50; // percent of hand width
+      const pushX = (1 - dist) * MAX_PUSH;
+      const liftY = (1 - dist) * 2 + yDrift * 1.5;
+      const rotate = (1 - dist) * 3;
 
       if (leftRef.current) {
         leftRef.current.style.transform =
-          `translate3d(${-pushX}%, ${-liftY}%, 0) rotate(${-rotate}deg)`;
+          `translate3d(${pushX}%, ${-liftY}%, 0) rotate(${rotate}deg)`;
       }
       if (rightRef.current) {
         rightRef.current.style.transform =
-          `translate3d(${pushX}%, ${-liftY}%, 0) rotate(${rotate}deg)`;
+          `translate3d(${-pushX}%, ${-liftY}%, 0) rotate(${-rotate}deg)`;
       }
 
       rafId.current = requestAnimationFrame(animate);
     };
-    animate();
+    rafId.current = requestAnimationFrame(animate);
 
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
@@ -142,7 +160,7 @@ export const Hero = () => {
         <div
           ref={leftRef}
           className="w-[55vw] max-w-[780px] -ml-[2vw] will-change-transform"
-          style={{ transform: "translate3d(-18%, 0, 0)" }}
+          style={{ transform: "translate3d(0, 0, 0)" }}
         >
           <img
             src={handRobot}
@@ -156,7 +174,7 @@ export const Hero = () => {
         <div
           ref={rightRef}
           className="w-[55vw] max-w-[780px] -mr-[2vw] will-change-transform"
-          style={{ transform: "translate3d(18%, 0, 0)" }}
+          style={{ transform: "translate3d(0, 0, 0)" }}
         >
           <img
             src={handHuman}
