@@ -160,7 +160,7 @@ export const Hero = () => {
         <div
           ref={leftRef}
           className="w-[55vw] max-w-[780px] -ml-[2vw] will-change-transform"
-          style={{ transform: "translate3d(-18%, 0, 0)" }}
+          style={{ transform: "translate3d(0, 0, 0)" }}
         >
           <img
             src={handRobot}
@@ -174,7 +174,7 @@ export const Hero = () => {
         <div
           ref={rightRef}
           className="w-[55vw] max-w-[780px] -mr-[2vw] will-change-transform"
-          style={{ transform: "translate3d(18%, 0, 0)" }}
+          style={{ transform: "translate3d(0, 0, 0)" }}
         >
           <img
             src={handHuman}
