@@ -126,18 +126,33 @@ All colors MUST be HSL.
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.35;
+    opacity: 0.5;
     mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
+  /* Soft vignette to mimic darker corners in the reference */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 55%,
+      hsl(0 0% 0% / 0.18) 100%
+    );
+    mix-blend-mode: multiply;
+  }
+
   .halftone-bg {
     background-color: hsl(var(--background));
+    /* Fine, even halftone dot field — small dots, low contrast */
     background-image:
-      radial-gradient(hsl(0 0% 0% / 0.18) 1px, transparent 1.2px),
-      radial-gradient(hsl(0 0% 0% / 0.08) 1px, transparent 1.2px);
-    background-size: 6px 6px, 14px 14px;
-    background-position: 0 0, 3px 3px;
+      radial-gradient(hsl(0 0% 0% / 0.22) 0.7px, transparent 1px),
+      radial-gradient(hsl(0 0% 0% / 0.10) 0.6px, transparent 1px);
+    background-size: 4px 4px, 7px 7px;
+    background-position: 0 0, 2px 2px;
   }
 
   .pill {
