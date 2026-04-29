@@ -47,6 +47,7 @@ export const Hero = () => {
     measure();
 
     const onMove = (e: PointerEvent) => {
+      if (reduceMotion.current) return;
       const dx = (e.clientX - cx) / halfW;
       const dy = (e.clientY - cy) / halfH;
       let dist = Math.hypot(dx, dy);
@@ -63,6 +64,7 @@ export const Hero = () => {
     };
 
     const onLeave = () => {
+      if (reduceMotion.current) return;
       target.current.x = 1;
       target.current.y = 0;
     };
@@ -70,12 +72,14 @@ export const Hero = () => {
     // Unified pointer handling — works for mouse, pen, and touch.
     // pointermove fires for touch while the finger is down; pointerup releases.
     const onTouchRelease = () => {
+      if (reduceMotion.current) return;
       // When the finger lifts, ease hands back to their resting (apart) state.
       target.current.x = 1;
       target.current.y = 0;
     };
 
     const onPointerDown = (e: PointerEvent) => {
+      if (reduceMotion.current) return;
       if (e.pointerType === "touch") onMove(e);
     };
 
@@ -89,7 +93,7 @@ export const Hero = () => {
     const TAP_MAX_DIST = 10; // px
 
     const onTapStart = (e: PointerEvent) => {
-      if (e.pointerType !== "touch") return;
+      if (reduceMotion.current || e.pointerType !== "touch") return;
       tapStartX = e.clientX;
       tapStartY = e.clientY;
       tapStartT = performance.now();
@@ -97,14 +101,14 @@ export const Hero = () => {
     };
 
     const onTapMove = (e: PointerEvent) => {
-      if (!isTap || e.pointerType !== "touch") return;
+      if (reduceMotion.current || !isTap || e.pointerType !== "touch") return;
       if (Math.hypot(e.clientX - tapStartX, e.clientY - tapStartY) > TAP_MAX_DIST) {
         isTap = false;
       }
     };
 
     const onTapEnd = (e: PointerEvent) => {
-      if (e.pointerType !== "touch") return;
+      if (reduceMotion.current || e.pointerType !== "touch") return;
       if (isTap && performance.now() - tapStartT <= TAP_MAX_MS) {
         // Quick tap: snap to center, then release back apart shortly after.
         target.current.x = 0;
@@ -119,6 +123,8 @@ export const Hero = () => {
 
     // Shared snap helper used by tap, keyboard activation, and screen-reader clicks.
     snapToCenter.current = () => {
+      // Reduced-motion users don't get the animated snap/release.
+      if (reduceMotion.current) return;
       target.current.x = 0;
       target.current.y = 0;
       if (releaseTimeout.current) window.clearTimeout(releaseTimeout.current);
