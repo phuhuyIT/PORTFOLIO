@@ -246,6 +246,21 @@ export const Hero = () => {
           {portfolio.heroCta}
           <ArrowUpRight className="size-4" />
         </a>
+
+        {/* Accessible trigger: keyboard + screen-reader users can activate
+            the same center-snap interaction that mouse/touch users get. */}
+        <button
+          type="button"
+          onClick={() => snapToCenter.current()}
+          className="sr-only focus:not-sr-only focus:fixed focus:left-1/2 focus:-translate-x-1/2 focus:top-24 focus:z-50 focus:pill focus:bg-primary focus:text-primary-foreground"
+          aria-describedby="hero-hands-desc"
+        >
+          Bring the hands together
+        </button>
+        <p id="hero-hands-desc" className="sr-only">
+          Decorative robot and human hands react to your cursor. Activate this
+          control to briefly bring them together at the center, then release.
+        </p>
       </div>
 
       {/* Hands — anchored to bottom edges */}
