@@ -77,8 +77,49 @@ export const Hero = () => {
       if (e.pointerType === "touch") onMove(e);
     };
 
+    // Tap detection: a quick, low-movement touch snaps hands to mirrored center,
+    // then eases them back apart on release.
+    let tapStartX = 0;
+    let tapStartY = 0;
+    let tapStartT = 0;
+    let isTap = false;
+    const TAP_MAX_MS = 250;
+    const TAP_MAX_DIST = 10; // px
+
+    const onTapStart = (e: PointerEvent) => {
+      if (e.pointerType !== "touch") return;
+      tapStartX = e.clientX;
+      tapStartY = e.clientY;
+      tapStartT = performance.now();
+      isTap = true;
+    };
+
+    const onTapMove = (e: PointerEvent) => {
+      if (!isTap || e.pointerType !== "touch") return;
+      if (Math.hypot(e.clientX - tapStartX, e.clientY - tapStartY) > TAP_MAX_DIST) {
+        isTap = false;
+      }
+    };
+
+    const onTapEnd = (e: PointerEvent) => {
+      if (e.pointerType !== "touch") return;
+      if (isTap && performance.now() - tapStartT <= TAP_MAX_MS) {
+        // Quick tap: snap to center, then release back apart shortly after.
+        target.current.x = 0;
+        target.current.y = 0;
+        window.setTimeout(() => {
+          target.current.x = 1;
+          target.current.y = 0;
+        }, 450);
+      }
+      isTap = false;
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    window.addEventListener("pointerdown", onTapStart, { passive: true });
+    window.addEventListener("pointermove", onTapMove, { passive: true });
+    window.addEventListener("pointerup", onTapEnd, { passive: true });
     window.addEventListener("pointerleave", onLeave);
     window.addEventListener("pointerup", onTouchRelease);
     window.addEventListener("pointercancel", onTouchRelease);
@@ -151,6 +192,9 @@ export const Hero = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointerdown", onTapStart);
+      window.removeEventListener("pointermove", onTapMove);
+      window.removeEventListener("pointerup", onTapEnd);
       window.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("pointerup", onTouchRelease);
       window.removeEventListener("pointercancel", onTouchRelease);
