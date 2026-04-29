@@ -30,13 +30,25 @@ export const Hero = () => {
     const hero = heroRef.current;
     if (!hero) return;
 
-    const onMove = (e: PointerEvent) => {
+    // Cache hero center + half-extents; refresh only on resize/scroll, not per move.
+    let cx = 0;
+    let cy = 0;
+    let halfW = 1;
+    let halfH = 1;
+    const measure = () => {
       const rect = hero.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dx = (e.clientX - cx) / (rect.width / 2);
-      const dy = (e.clientY - cy) / (rect.height / 2);
-      let dist = Math.min(1, Math.hypot(dx, dy));
+      cx = rect.left + rect.width / 2;
+      cy = rect.top + rect.height / 2;
+      halfW = rect.width / 2 || 1;
+      halfH = rect.height / 2 || 1;
+    };
+    measure();
+
+    const onMove = (e: PointerEvent) => {
+      const dx = (e.clientX - cx) / halfW;
+      const dy = (e.clientY - cy) / halfH;
+      let dist = Math.hypot(dx, dy);
+      if (dist > 1) dist = 1;
       // Deadzone near center → snap to exact 0 so hands meet perfectly mirrored
       const DEADZONE = 0.12;
       if (dist < DEADZONE) {
@@ -70,6 +82,14 @@ export const Hero = () => {
     window.addEventListener("pointerleave", onLeave);
     window.addEventListener("pointerup", onTouchRelease);
     window.addEventListener("pointercancel", onTouchRelease);
+    window.addEventListener("resize", measure, { passive: true });
+    window.addEventListener("scroll", measure, { passive: true });
+    let roCleanup: (() => void) | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(measure);
+      ro.observe(hero);
+      roCleanup = () => ro.disconnect();
+    }
 
     if (reduceMotion.current) {
       target.current.x = 0.55;
@@ -81,6 +101,9 @@ export const Hero = () => {
     target.current.x = 1;
 
     let lastT = performance.now();
+    let lastPushX = Number.NaN;
+    let lastLiftY = Number.NaN;
+    let lastRotate = Number.NaN;
     const animate = (now: number) => {
       const dt = Math.min(64, now - lastT);
       lastT = now;
@@ -99,23 +122,25 @@ export const Hero = () => {
       const dist = current.current.x; // 0 (center) .. 1 (far)
       const yDrift = current.current.y;
 
-      // dist=0 -> hands meet at exact mirrored midpoint (translate to 50% inward)
-      // dist=1 -> hands rest at their natural anchored position
-      // Hand container is 55vw wide and anchored at left/right edges with -2vw offset.
-      // To bring inner edges to screen center we need to translate by ~ (50% - container_edge).
-      // Empirically 50% inward translation lands the wrists at the centerline.
-      const MAX_PUSH = 50; // percent of hand width
-      const pushX = (1 - dist) * MAX_PUSH;
-      const liftY = (1 - dist) * 2 + yDrift * 1.5;
-      const rotate = (1 - dist) * 3;
+      const inv = 1 - dist;
+      // Quantize to ~2 decimals to skip writes that wouldn't change pixels.
+      const pushX = Math.round(inv * 50 * 100) / 100;
+      const liftY = Math.round((inv * 2 + yDrift * 1.5) * 100) / 100;
+      const rotate = Math.round(inv * 3 * 100) / 100;
 
-      if (leftRef.current) {
-        leftRef.current.style.transform =
-          `translate3d(${pushX}%, ${-liftY}%, 0) rotate(${rotate}deg)`;
-      }
-      if (rightRef.current) {
-        rightRef.current.style.transform =
-          `translate3d(${-pushX}%, ${-liftY}%, 0) rotate(${-rotate}deg)`;
+      if (pushX !== lastPushX || liftY !== lastLiftY || rotate !== lastRotate) {
+        const ty = -liftY;
+        if (leftRef.current) {
+          leftRef.current.style.transform =
+            "translate3d(" + pushX + "%," + ty + "%,0) rotate(" + rotate + "deg)";
+        }
+        if (rightRef.current) {
+          rightRef.current.style.transform =
+            "translate3d(" + -pushX + "%," + ty + "%,0) rotate(" + -rotate + "deg)";
+        }
+        lastPushX = pushX;
+        lastLiftY = liftY;
+        lastRotate = rotate;
       }
 
       rafId.current = requestAnimationFrame(animate);
@@ -129,6 +154,9 @@ export const Hero = () => {
       window.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("pointerup", onTouchRelease);
       window.removeEventListener("pointercancel", onTouchRelease);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure);
+      if (roCleanup) roCleanup();
     };
   }, []);
 
