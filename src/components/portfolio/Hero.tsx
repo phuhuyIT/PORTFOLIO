@@ -13,6 +13,8 @@ export const Hero = () => {
   const heroRef = useRef<HTMLElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
+  const releaseTimeout = useRef<number | null>(null);
+  const snapToCenter = useRef<() => void>(() => {});
 
   // animated state
   const target = useRef({ x: 0, y: 0 }); // -1..1 normalized distance from center
@@ -115,6 +117,18 @@ export const Hero = () => {
       isTap = false;
     };
 
+    // Shared snap helper used by tap, keyboard activation, and screen-reader clicks.
+    snapToCenter.current = () => {
+      target.current.x = 0;
+      target.current.y = 0;
+      if (releaseTimeout.current) window.clearTimeout(releaseTimeout.current);
+      releaseTimeout.current = window.setTimeout(() => {
+        target.current.x = 1;
+        target.current.y = 0;
+        releaseTimeout.current = null;
+      }, 450);
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
     window.addEventListener("pointerdown", onTapStart, { passive: true });
@@ -190,6 +204,7 @@ export const Hero = () => {
 
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
+      if (releaseTimeout.current) window.clearTimeout(releaseTimeout.current);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointerdown", onTapStart);
