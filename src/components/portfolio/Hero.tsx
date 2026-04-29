@@ -53,20 +53,23 @@ export const Hero = () => {
       target.current.y = 0;
     };
 
-    if (!isTouch.current) {
-      window.addEventListener("pointermove", onMove);
-      window.addEventListener("pointerleave", onLeave);
-    } else {
-      // Touch: gentle automatic loop
-      let t = 0;
-      const loop = () => {
-        t += 0.015;
-        target.current.x = 0.5 + Math.sin(t) * 0.5;
-        target.current.y = Math.sin(t * 0.7) * 0.3;
-        rafId.current = requestAnimationFrame(loop);
-      };
-      loop();
-    }
+    // Unified pointer handling — works for mouse, pen, and touch.
+    // pointermove fires for touch while the finger is down; pointerup releases.
+    const onTouchRelease = () => {
+      // When the finger lifts, ease hands back to their resting (apart) state.
+      target.current.x = 1;
+      target.current.y = 0;
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.pointerType === "touch") onMove(e);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    window.addEventListener("pointerleave", onLeave);
+    window.addEventListener("pointerup", onTouchRelease);
+    window.addEventListener("pointercancel", onTouchRelease);
 
     if (reduceMotion.current) {
       target.current.x = 0.55;
@@ -75,7 +78,7 @@ export const Hero = () => {
 
     // initial: hands apart
     current.current.x = 1;
-    target.current.x = isTouch.current ? target.current.x : 1;
+    target.current.x = 1;
 
     let lastT = performance.now();
     const animate = (now: number) => {
@@ -122,7 +125,10 @@ export const Hero = () => {
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("pointerup", onTouchRelease);
+      window.removeEventListener("pointercancel", onTouchRelease);
     };
   }, []);
 
@@ -130,7 +136,7 @@ export const Hero = () => {
     <section
       id="top"
       ref={heroRef}
-      className="relative halftone-bg overflow-hidden min-h-screen flex flex-col items-center justify-center pt-28 pb-0"
+      className="relative halftone-bg overflow-hidden min-h-screen flex flex-col items-center justify-center pt-28 pb-0 touch-none"
     >
       <div className="grain absolute inset-0" aria-hidden />
 
