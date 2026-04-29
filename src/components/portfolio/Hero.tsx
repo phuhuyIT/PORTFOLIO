@@ -13,6 +13,8 @@ export const Hero = () => {
   const heroRef = useRef<HTMLElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
+  const releaseTimeout = useRef<number | null>(null);
+  const snapToCenter = useRef<() => void>(() => {});
 
   // animated state
   const target = useRef({ x: 0, y: 0 }); // -1..1 normalized distance from center
@@ -115,6 +117,18 @@ export const Hero = () => {
       isTap = false;
     };
 
+    // Shared snap helper used by tap, keyboard activation, and screen-reader clicks.
+    snapToCenter.current = () => {
+      target.current.x = 0;
+      target.current.y = 0;
+      if (releaseTimeout.current) window.clearTimeout(releaseTimeout.current);
+      releaseTimeout.current = window.setTimeout(() => {
+        target.current.x = 1;
+        target.current.y = 0;
+        releaseTimeout.current = null;
+      }, 450);
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
     window.addEventListener("pointerdown", onTapStart, { passive: true });
@@ -190,6 +204,7 @@ export const Hero = () => {
 
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
+      if (releaseTimeout.current) window.clearTimeout(releaseTimeout.current);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointerdown", onTapStart);
@@ -231,6 +246,21 @@ export const Hero = () => {
           {portfolio.heroCta}
           <ArrowUpRight className="size-4" />
         </a>
+
+        {/* Accessible trigger: keyboard + screen-reader users can activate
+            the same center-snap interaction that mouse/touch users get. */}
+        <button
+          type="button"
+          onClick={() => snapToCenter.current()}
+          className="sr-only focus:not-sr-only focus:fixed focus:left-1/2 focus:-translate-x-1/2 focus:top-24 focus:z-50 focus:pill focus:bg-primary focus:text-primary-foreground"
+          aria-describedby="hero-hands-desc"
+        >
+          Bring the hands together
+        </button>
+        <p id="hero-hands-desc" className="sr-only">
+          Decorative robot and human hands react to your cursor. Activate this
+          control to briefly bring them together at the center, then release.
+        </p>
       </div>
 
       {/* Hands — anchored to bottom edges */}
