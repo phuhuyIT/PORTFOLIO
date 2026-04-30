@@ -45,6 +45,9 @@ export const ThemeSettings = () => {
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
+  const focusRing =
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:border-ring";
+
   return (
     <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2">
       <Button
@@ -53,7 +56,7 @@ export const ThemeSettings = () => {
         variant="outline"
         onClick={toggleTheme}
         aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-        className="rounded-full shadow-md backdrop-blur bg-background/80"
+        className={`rounded-full shadow-md backdrop-blur bg-background/80 ${focusRing}`}
       >
         {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </Button>
@@ -65,7 +68,7 @@ export const ThemeSettings = () => {
             size="icon"
             variant="outline"
             aria-label="Open display settings"
-            className="rounded-full shadow-md backdrop-blur bg-background/80"
+            className={`rounded-full shadow-md backdrop-blur bg-background/80 ${focusRing} data-[state=open]:ring-2 data-[state=open]:ring-ring data-[state=open]:ring-offset-2 data-[state=open]:ring-offset-background`}
           >
             <Settings2 className="h-4 w-4" />
           </Button>
@@ -89,6 +92,7 @@ export const ThemeSettings = () => {
               value={[Math.round(scale * 100)]}
               onValueChange={(v) => setScale((v[0] ?? 100) / 100)}
               aria-label="Adjust font size"
+              className="[&_[role=slider]]:focus-visible:ring-4 [&_[role=slider]]:focus-visible:ring-ring/60 [&_[role=slider]]:focus-visible:ring-offset-2 [&_[role=slider]]:focus-visible:ring-offset-background [&_[role=slider]]:focus-visible:scale-110 [&_[role=slider]]:transition-transform"
             />
             <div className="flex justify-between gap-2">
               <Button
@@ -96,7 +100,7 @@ export const ThemeSettings = () => {
                 size="sm"
                 variant="ghost"
                 onClick={() => setScale(1)}
-                className="text-xs"
+                className={`text-xs ${focusRing}`}
               >
                 Reset
               </Button>
@@ -107,6 +111,7 @@ export const ThemeSettings = () => {
                   variant="outline"
                   onClick={() => setScale((s) => Math.max(0.85, +(s - 0.05).toFixed(2)))}
                   aria-label="Decrease font size"
+                  className={focusRing}
                 >
                   −
                 </Button>
@@ -116,6 +121,7 @@ export const ThemeSettings = () => {
                   variant="outline"
                   onClick={() => setScale((s) => Math.min(1.3, +(s + 0.05).toFixed(2)))}
                   aria-label="Increase font size"
+                  className={focusRing}
                 >
                   +
                 </Button>
