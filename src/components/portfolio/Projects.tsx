@@ -9,7 +9,7 @@ export const Projects = () => (
       {portfolio.projects.map((p, i) => (
         <article
           key={i}
-          className="group relative bg-card border border-foreground/10 p-8 rounded-3xl hover:border-accent transition-colors duration-300"
+          className="group relative liquid-glass p-8 rounded-[2rem] hover:border-accent/40 transition-all duration-500 hover:-translate-y-1"
         >
           <div className="flex items-start justify-between gap-4 mb-4">
             <h3 className="font-display text-3xl md:text-4xl group-hover:text-accent transition-colors">

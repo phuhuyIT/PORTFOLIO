@@ -14,7 +14,7 @@ export const Skills = () => (
             {items.map((s) => (
               <span
                 key={s}
-                className="px-4 py-2 border border-foreground/20 rounded-full text-sm hover:border-accent hover:text-accent transition-colors"
+                className="px-4 py-2 liquid-glass rounded-full text-sm hover:border-accent hover:text-accent transition-colors"
               >
                 {s}
               </span>

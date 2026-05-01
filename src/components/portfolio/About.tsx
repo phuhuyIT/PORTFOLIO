@@ -13,7 +13,7 @@ export const About = () => (
         ))}
       </div>
       <div className="md:col-span-5">
-        <div className="aspect-[4/5] halftone-bg border border-foreground/10 relative overflow-hidden">
+        <div className="aspect-[4/5] liquid-glass border border-foreground/10 relative overflow-hidden rounded-3xl">
           <div className="grain absolute inset-0" aria-hidden />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="font-display text-[10rem] text-foreground/30 leading-none">

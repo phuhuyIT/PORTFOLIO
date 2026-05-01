@@ -104,8 +104,20 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-accent/30 selection:text-accent;
     font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Global background effects */
+  .global-bg {
+    @apply fixed inset-0 z-[-1] pointer-events-none;
+  }
+  
+  .scanline-overlay {
+    @apply absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03] dark:opacity-[0.07] z-[-1];
+    background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), 
+                linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06));
+    background-size: 100% 4px, 4px 100%;
   }
 
   h1, h2, h3, h4 {
@@ -157,6 +169,46 @@ All colors MUST be HSL.
   }
 
   .pill {
-    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 font-medium transition-all duration-200;
+    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 font-medium transition-all duration-300 liquid-glass hover:scale-105 active:scale-95;
+  }
+
+  .liquid-glass {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.0) 50%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+    background-size: 200% 200%;
+    animation: liquid-flow 15s ease infinite;
+  }
+
+  .dark .liquid-glass {
+    @apply bg-black/20 border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(255, 255, 255, 0.0) 50%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+  }
+
+  .liquid-glass-accent {
+    @apply bg-accent/20 backdrop-blur-xl border border-accent/30 shadow-[0_8px_32px_0_rgba(255,45,45,0.15)];
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 45, 45, 0.05) 0%,
+      rgba(255, 45, 45, 0.0) 50%,
+      rgba(255, 45, 45, 0.05) 100%
+    );
+    background-size: 200% 200%;
+    animation: liquid-flow 15s ease infinite;
+  }
+
+  @keyframes liquid-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 }

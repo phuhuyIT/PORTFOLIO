@@ -4,9 +4,8 @@ import { portfolio } from "@/content/portfolio";
 export const Contact = () => (
   <section
     id="contact"
-    className="relative halftone-bg overflow-hidden border-t border-foreground/15"
+    className="relative overflow-hidden border-t border-foreground/15"
   >
-    <div className="grain absolute inset-0" aria-hidden />
     <div className="container mx-auto px-4 py-24 md:py-40 relative z-10 text-center">
       <p className="text-accent font-mono text-sm mb-4">05 — Contact</p>
       <h2 className="font-display text-[clamp(2.5rem,8vw,7rem)] leading-[0.95]">
@@ -15,7 +14,7 @@ export const Contact = () => (
       </h2>
       <a
         href={`mailto:${portfolio.email}`}
-        className="inline-flex items-center gap-2 mt-10 pill bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground"
+        className="inline-flex items-center gap-2 mt-10 pill liquid-glass-accent text-accent"
       >
         {portfolio.email} <ArrowUpRight className="size-4" />
       </a>
@@ -27,7 +26,7 @@ export const Contact = () => (
             target="_blank"
             rel="noreferrer noopener"
             aria-label="GitHub"
-            className="size-11 grid place-items-center rounded-full border border-foreground/30 hover:bg-foreground hover:text-background transition-colors"
+            className="size-11 grid place-items-center rounded-full liquid-glass hover:text-accent transition-colors"
           >
             <Github className="size-5" />
           </a>
@@ -38,7 +37,7 @@ export const Contact = () => (
             target="_blank"
             rel="noreferrer noopener"
             aria-label="LinkedIn"
-            className="size-11 grid place-items-center rounded-full border border-foreground/30 hover:bg-foreground hover:text-background transition-colors"
+            className="size-11 grid place-items-center rounded-full liquid-glass hover:text-accent transition-colors"
           >
             <Linkedin className="size-5" />
           </a>
@@ -49,7 +48,7 @@ export const Contact = () => (
             target="_blank"
             rel="noreferrer noopener"
             aria-label="Twitter"
-            className="size-11 grid place-items-center rounded-full border border-foreground/30 hover:bg-foreground hover:text-background transition-colors"
+            className="size-11 grid place-items-center rounded-full liquid-glass hover:text-accent transition-colors"
           >
             <Twitter className="size-5" />
           </a>

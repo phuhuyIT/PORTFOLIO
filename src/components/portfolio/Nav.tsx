@@ -1,31 +1,27 @@
 import { portfolio } from "@/content/portfolio";
 
 const links = [
-  { href: "#work", label: "Work" },
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#work", label: "Work" },
+  { href: "/#about", label: "About" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export const Nav = () => {
   return (
-    <nav className="fixed top-0 inset-x-0 z-50">
-      <div className="container mx-auto flex items-center justify-between py-5">
-        <a href="#top" className="font-display text-xl tracking-tight">
+    <nav className="fixed top-6 inset-x-0 z-50 px-6">
+      <div className="container max-w-5xl mx-auto liquid-glass rounded-full px-6 py-3 flex items-center justify-between">
+        <a href="/" className="font-mono font-bold text-lg tracking-tight hover:text-accent transition-colors">
           {portfolio.initials}
-          <sup className="text-[0.55em] ml-0.5 align-super">®</sup>
+          <sup className="text-[0.55em] ml-0.5 align-super opacity-50">SYS</sup>
         </a>
 
-        <ul className="hidden md:flex items-center gap-8 text-sm">
+        <ul className="hidden md:flex items-center gap-8 text-xs font-mono uppercase tracking-widest">
           {links.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
-                className="relative inline-block transition-colors hover:text-accent
-                  after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5
-                  after:w-full after:scale-x-0 after:origin-right after:bg-accent
-                  after:transition-transform after:duration-300
-                  hover:after:scale-x-100 hover:after:origin-left"
+                className="relative inline-block transition-colors hover:text-accent"
               >
                 {l.label}
               </a>
@@ -34,10 +30,10 @@ export const Nav = () => {
         </ul>
 
         <a
-          href="#contact"
-          className="pill bg-primary text-primary-foreground text-sm hover:bg-accent hover:text-accent-foreground"
+          href="/#contact"
+          className="pill text-xs !py-2 !px-4"
         >
-          Get In Touch
+          {portfolio.heroCta}
         </a>
       </div>
     </nav>
