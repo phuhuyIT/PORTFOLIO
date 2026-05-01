@@ -169,7 +169,7 @@ export const Hero = () => {
         </p>
         <a
           href="#contact"
-          className="pill liquid-glass-accent text-accent mt-10 text-sm font-mono uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-1000 fill-mode-both"
+          className="pill liquid-glass-accent mt-10 text-sm font-mono uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-1000 fill-mode-both"
           style={{ animationDelay: '6000ms' }}
         >
           {portfolio.heroCta}

@@ -31,7 +31,7 @@ export const Nav = () => {
 
         <a
           href="/#contact"
-          className="pill text-xs !py-2 !px-4"
+          className="pill liquid-glass-accent text-xs !py-2 !px-4"
         >
           {portfolio.heroCta}
         </a>

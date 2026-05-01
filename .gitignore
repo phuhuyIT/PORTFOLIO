@@ -1,3 +1,5 @@
+# Ignore the chat_image directory
+chat_image/
 # Logs
 logs
 *.log
