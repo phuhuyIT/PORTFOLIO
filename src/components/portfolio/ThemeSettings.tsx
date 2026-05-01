@@ -56,7 +56,7 @@ export const ThemeSettings = () => {
         variant="outline"
         onClick={toggleTheme}
         aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-        className={`rounded-full shadow-md backdrop-blur bg-background/80 ${focusRing}`}
+        className={`rounded-full shadow-md liquid-glass ${focusRing}`}
       >
         {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </Button>
@@ -68,7 +68,7 @@ export const ThemeSettings = () => {
             size="icon"
             variant="outline"
             aria-label="Open display settings"
-            className={`rounded-full shadow-md backdrop-blur bg-background/80 ${focusRing} data-[state=open]:ring-2 data-[state=open]:ring-ring data-[state=open]:ring-offset-2 data-[state=open]:ring-offset-background`}
+            className={`rounded-full shadow-md liquid-glass ${focusRing} data-[state=open]:ring-2 data-[state=open]:ring-ring data-[state=open]:ring-offset-2 data-[state=open]:ring-offset-background`}
           >
             <Settings2 className="h-4 w-4" />
           </Button>
