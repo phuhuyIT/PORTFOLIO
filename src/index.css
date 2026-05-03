@@ -114,47 +114,49 @@ All colors MUST be HSL.
   }
 
   .bg-main-gradient {
+    /* "The Gallery" Light Mode: High-contrast dramatic lighting */
     background: 
-      radial-gradient(circle at 50% 30%, rgba(255, 100, 100, 0.15) 0%, transparent 70%),
-      linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      radial-gradient(circle at -10% -10%, rgba(255, 0, 0, 0.15) 0%, transparent 60%),
+      radial-gradient(circle at 110% 110%, rgba(15, 23, 42, 0.08) 0%, transparent 60%),
+      #ffffff;
   }
 
   .dark .bg-main-gradient {
     background: 
-      radial-gradient(circle at 50% 20%, rgba(220, 38, 38, 0.15) 0%, transparent 60%),
-      radial-gradient(circle at 80% 80%, rgba(185, 28, 28, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 30% 20%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(100, 100, 100, 0.1) 0%, transparent 50%),
       #000000;
   }
 
-  /* Vibrant Mesh Gradient Blobs - Extreme Intensity */
+  /* Balanced Mesh Gradient Blobs - Red vs Grey/Black 50/50 */
   .global-bg::before {
     content: '';
-    @apply absolute inset-0 opacity-20 dark:opacity-85;
+    @apply absolute inset-0 opacity-30 dark:opacity-85;
     background: 
-      radial-gradient(circle at 15% 25%, #ff0000 0%, transparent 40%),
-      radial-gradient(circle at 85% 75%, #cc0000 0%, transparent 45%),
-      radial-gradient(circle at 50% 50%, #ff0033 0%, transparent 55%),
-      radial-gradient(circle at 85% 15%, #ff0066 0%, transparent 35%);
-    filter: blur(120px);
-    animation: pulse-blobs 12s ease-in-out infinite alternate;
+      radial-gradient(circle at 10% 10%, #ff0000 0%, transparent 50%),
+      radial-gradient(circle at 90% 90%, #333333 0%, transparent 55%),
+      radial-gradient(circle at 50% 50%, #444444 0%, transparent 60%),
+      radial-gradient(circle at 90% 10%, #cc0000 0%, transparent 40%);
+    filter: blur(140px);
+    animation: pulse-blobs 15s ease-in-out infinite alternate;
   }
 
-  @keyframes pulse-blobs {
-    0% { transform: scale(1) translate(0, 0); }
-    100% { transform: scale(1.3) translate(5%, 5%); }
-  }
-
-  /* Secondary Glow Layer */
+  /* Atmospheric Depth Layer for "The Gallery" look */
   .global-bg::after {
     content: '';
-    @apply absolute inset-0 opacity-10 dark:opacity-30;
-    background: linear-gradient(135deg, rgba(255, 45, 45, 0.1) 0%, transparent 50%, rgba(122, 0, 0, 0.1) 100%);
+    @apply absolute inset-0 opacity-20 dark:opacity-30;
+    background: 
+      linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, transparent 40%, rgba(0, 0, 0, 0.1) 100%);
+  }
+
+  .dark .global-bg::after {
+    background: linear-gradient(135deg, rgba(100, 100, 100, 0.1) 0%, transparent 50%, rgba(0, 0, 0, 0.2) 100%);
   }
   
   .scanline-overlay {
     @apply absolute inset-0 overflow-hidden pointer-events-none opacity-[0.02] dark:opacity-[0.05] z-[-1];
     background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), 
-                linear-gradient(90deg, rgba(255,0,0,0.2), rgba(0,0,0,0), rgba(255,0,0,0.2));
+                linear-gradient(90deg, rgba(150,150,150,0.1), rgba(0,0,0,0), rgba(150,150,150,0.1));
     background-size: 100% 4px, 4px 100%;
   }
 
