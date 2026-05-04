@@ -2,271 +2,240 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    /* Light Grey Background */
-    --background: 210 20% 96%;
-    --foreground: 0 0% 7%;
+    --void: #020408;
+    --aurora-1: #00FFD1;
+    --aurora-2: #7B61FF;
+    --aurora-3: #FF6B35;
+    --signal: #E0F7FF;
+    --ghost: #1A2535;
+    --grid: #0D1B2A;
+    --static: rgba(0, 255, 209, 0.07);
 
-    --card: 210 20% 98%;
-    --card-foreground: 0 0% 7%;
+    /* Shadcn base vars adapted to Dark/Sci-fi */
+    --background: 220 60% 2%; /* --void roughly */
+    --foreground: 198 100% 95%; /* --signal */
 
-    --popover: 210 20% 98%;
-    --popover-foreground: 0 0% 7%;
+    --card: 215 34% 15%; /* --ghost roughly */
+    --card-foreground: 198 100% 95%;
 
-    /* Pure black primary (CTA pills) */
-    --primary: 0 0% 7%;
-    --primary-foreground: 210 20% 96%;
+    --popover: 215 34% 15%;
+    --popover-foreground: 198 100% 95%;
 
-    --secondary: 210 10% 90%;
-    --secondary-foreground: 0 0% 7%;
+    --primary: 169 100% 50%; /* aurora-1 */
+    --primary-foreground: 220 60% 2%;
 
-    --muted: 210 10% 90%;
-    --muted-foreground: 0 0% 35%;
+    --secondary: 250 100% 69%; /* aurora-2 */
+    --secondary-foreground: 198 100% 95%;
 
-    /* Electric red accent */
-    --accent: 0 100% 58%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 215 34% 15%;
+    --muted-foreground: 215 20% 65%;
 
-    --destructive: 0 100% 58%;
+    --accent: 15 100% 60%; /* aurora-3 */
+    --accent-foreground: 198 100% 95%;
+
+    --destructive: 0 100% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 88%;
-    --input: 0 0% 85%;
-    --ring: 0 0% 7%;
+    --border: 215 34% 25%;
+    --input: 215 34% 25%;
+    --ring: 169 100% 50%;
+    --radius: 0; /* Sci-fi usually has sharp corners or specific cutouts */
 
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 0 100% 58%;
+    --font-orbitron: "Orbitron", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --font-sans: "DM Sans", sans-serif;
+    --font-serif: "Cormorant Garamond", serif;
   }
 
   .dark {
-    /* Pure Black counterpart */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 95%;
-
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 0 0% 95%;
-    --primary-foreground: 0 0% 7%;
-
-    --secondary: 0 0% 8%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 65%;
-
-    --accent: 0 100% 62%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 100% 58%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 0 0% 95%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 0 100% 58%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 0 100% 58%;
+    /* Same as root because we only want dark mode */
+    --background: 220 60% 2%;
+    --foreground: 198 100% 95%;
+    --card: 215 34% 15%;
+    --card-foreground: 198 100% 95%;
+    --popover: 215 34% 15%;
+    --popover-foreground: 198 100% 95%;
+    --primary: 169 100% 50%;
+    --primary-foreground: 220 60% 2%;
+    --secondary: 250 100% 69%;
+    --secondary-foreground: 198 100% 95%;
+    --muted: 215 34% 15%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 15 100% 60%;
+    --accent-foreground: 198 100% 95%;
+    --border: 215 34% 25%;
+    --input: 215 34% 25%;
+    --ring: 169 100% 50%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-accent/30 selection:text-accent;
-    font-family: 'Inter', system-ui, sans-serif;
-  }
-
-  /* Global background effects */
-  .global-bg {
-    @apply fixed inset-0 z-[-1] pointer-events-none overflow-hidden;
-  }
-
-  .bg-main-gradient {
-    /* "The Gallery" Light Mode: High-contrast dramatic lighting */
-    background: 
-      radial-gradient(circle at -10% -10%, rgba(255, 0, 0, 0.15) 0%, transparent 60%),
-      radial-gradient(circle at 110% 110%, rgba(15, 23, 42, 0.08) 0%, transparent 60%),
-      #ffffff;
-  }
-
-  .dark .bg-main-gradient {
-    background: 
-      radial-gradient(circle at 30% 20%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 70% 80%, rgba(100, 100, 100, 0.1) 0%, transparent 50%),
-      #000000;
-  }
-
-  /* Balanced Mesh Gradient Blobs - Red vs Grey/Black 50/50 */
-  .global-bg::before {
-    content: '';
-    @apply absolute inset-0 opacity-30 dark:opacity-85;
-    background: 
-      radial-gradient(circle at 10% 10%, #ff0000 0%, transparent 50%),
-      radial-gradient(circle at 90% 90%, #333333 0%, transparent 55%),
-      radial-gradient(circle at 50% 50%, #444444 0%, transparent 60%),
-      radial-gradient(circle at 90% 10%, #cc0000 0%, transparent 40%);
-    filter: blur(140px);
-    animation: pulse-blobs 15s ease-in-out infinite alternate;
-  }
-
-  /* Atmospheric Depth Layer for "The Gallery" look */
-  .global-bg::after {
-    content: '';
-    @apply absolute inset-0 opacity-20 dark:opacity-30;
-    background: 
-      linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, transparent 40%, rgba(0, 0, 0, 0.1) 100%);
-  }
-
-  .dark .global-bg::after {
-    background: linear-gradient(135deg, rgba(100, 100, 100, 0.1) 0%, transparent 50%, rgba(0, 0, 0, 0.2) 100%);
-  }
-  
-  .scanline-overlay {
-    @apply absolute inset-0 overflow-hidden pointer-events-none opacity-[0.02] dark:opacity-[0.05] z-[-1];
-    background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), 
-                linear-gradient(90deg, rgba(150,150,150,0.1), rgba(0,0,0,0), rgba(150,150,150,0.1));
-    background-size: 100% 4px, 4px 100%;
-  }
-
-  h1, h2, h3, h4 {
-    font-family: 'Anton', 'Archivo Black', sans-serif;
-    letter-spacing: -0.01em;
-    line-height: 0.95;
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    line-height: 1.8;
+    background-color: var(--void);
+    color: var(--signal);
+    overflow-x: hidden;
   }
 }
 
-@layer utilities {
-  .font-display {
-    font-family: 'Anton', 'Archivo Black', sans-serif;
-    letter-spacing: -0.01em;
-  }
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-orbitron);
+  letter-spacing: 0.15em;
+}
 
-  /* Halftone / grain texture overlay */
-  .grain::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.5;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  }
+.font-mono {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: 11px;
+}
 
-  /* Soft vignette to mimic darker corners in the reference */
-  .grain::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(
-      ellipse at center,
-      transparent 55%,
-      hsl(0 0% 0% / 0.18) 100%
-    );
-    mix-blend-mode: multiply;
-  }
+/* Glitch Effect */
+@keyframes glitch {
+  0%   { clip-path: inset(40% 0 61% 0); transform: translate(-4px, 0); }
+  20%  { clip-path: inset(92% 0 1% 0);  transform: translate(4px, 0);  }
+  40%  { clip-path: inset(43% 0 1% 0);  transform: translate(-2px, 0); }
+  60%  { clip-path: inset(25% 0 58% 0); transform: translate(2px, 0);  }
+  80%  { clip-path: inset(54% 0 7% 0);  transform: translate(-4px, 0); }
+  100% { clip-path: inset(58% 0 43% 0); transform: translate(0, 0);    }
+}
 
-  .halftone-bg {
-    /* Fine, even halftone dot field — small dots, low contrast */
-    background-image:
-      radial-gradient(hsl(0 0% 0% / 0.15) 0.7px, transparent 1px),
-      radial-gradient(hsl(0 0% 0% / 0.08) 0.6px, transparent 1px);
-    background-size: 4px 4px, 7px 7px;
-    background-position: 0 0, 2px 2px;
-  }
+.glitch-wrapper {
+  position: relative;
+  display: inline-block;
+}
 
-  .pill {
-    @apply inline-flex items-center gap-2 rounded-full px-6 py-3 font-medium transition-all duration-300 hover:scale-105 active:scale-95;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 4px 15px rgba(0, 0, 0, 0.3), 
-      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-    color: white;
-  }
+.glitch-wrapper::before,
+.glitch-wrapper::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--void);
+}
 
-  .pill:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 25px rgba(255, 45, 45, 0.3);
-  }
+.glitch-wrapper::before {
+  left: 2px;
+  text-shadow: -1px 0 var(--aurora-1);
+  clip-path: inset(40% 0 61% 0);
+  animation: glitch 2.5s infinite linear alternate-reverse;
+}
 
-  .liquid-glass {
-    @apply backdrop-blur-2xl border border-white/20;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-    box-shadow: 
-      0 12px 40px rgba(0, 0, 0, 0.6),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-    position: relative;
-    overflow: hidden;
-  }
+.glitch-wrapper::after {
+  left: -2px;
+  text-shadow: -1px 0 var(--aurora-2);
+  clip-path: inset(92% 0 1% 0);
+  animation: glitch 3s infinite linear alternate-reverse;
+}
 
-  .liquid-glass-accent {
-    @apply backdrop-blur-2xl border border-red-500/50;
-    background: linear-gradient(135deg, rgba(255, 45, 45, 0.5) 0%, rgba(255, 45, 45, 0.1) 100%);
-    box-shadow: 
-      0 12px 40px rgba(255, 45, 45, 0.4),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.25);
-    color: white;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-  }
+.glitch-paused::before, .glitch-paused::after {
+  animation: none !important;
+  opacity: 0;
+}
 
-  .liquid-glass-accent:hover {
-    background: linear-gradient(135deg, rgba(255, 45, 45, 0.65) 0%, rgba(255, 45, 45, 0.2) 100%);
-    box-shadow: 0 12px 50px rgba(255, 45, 45, 0.6);
-  }
+/* Scroll Reveals */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
 
-  .dark .liquid-glass {
-    @apply backdrop-blur-3xl;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-    box-shadow: 
-      0 12px 48px rgba(0, 0, 0, 0.8),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  }
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-  .dark .liquid-glass-accent {
-    background: linear-gradient(135deg, rgba(255, 45, 45, 0.4) 0%, rgba(255, 45, 45, 0.05) 100%);
-    box-shadow: 
-      0 12px 48px rgba(255, 45, 45, 0.3),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-  }
+/* Aurora Background */
+@keyframes aurora-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-  @keyframes liquid-flow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.aurora-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(0,255,209,0.08), transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(123,97,255,0.08), transparent 60%);
+  animation: aurora-shift 12s ease infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Scan Line on Cards */
+.sci-fi-card {
+  position: relative;
+  background: var(--ghost);
+  border: 1px solid var(--grid);
+  overflow: hidden;
+}
+
+.sci-fi-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 50%, rgba(0,255,209,0.03) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.sci-fi-card:hover::after {
+  opacity: 1;
+}
+
+/* HUD corners */
+.hud-corners {
+  position: relative;
+}
+
+.hud-corners::before, .hud-corners::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--aurora-1);
+  transition: all 0.3s ease;
+}
+
+.hud-corners::before {
+  top: -1px; left: -1px;
+  border-right: none; border-bottom: none;
+}
+
+.hud-corners::after {
+  bottom: -1px; right: -1px;
+  border-left: none; border-top: none;
+}
+
+.hud-corners:hover::before {
+  top: -4px; left: -4px;
+}
+
+.hud-corners:hover::after {
+  bottom: -4px; right: -4px;
+}
+
+/* Grid background overlay */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

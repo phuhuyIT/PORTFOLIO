@@ -1,231 +1,91 @@
-import { useEffect, useRef } from "react";
-import { ArrowUpRight, LayoutGrid } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { portfolio } from "@/content/portfolio";
-import handRobot from "@/assets/hand-robot.png";
-import handHuman from "@/assets/hand-human.png";
+import { HeroOrb } from "./HeroOrb";
+import { motion } from "framer-motion";
+
 import { Typewriter } from "./Typewriter";
 
-/**
- * Hero with cursor-reactive halftone hands and a central project icon.
- * - Cursor closer to center => hands move together & icon lights up.
- * - Improved radial tracking for smoother motion.
- */
 export const Hero = () => {
-  const heroRef = useRef<HTMLElement>(null);
-  const leftRef = useRef<HTMLDivElement>(null);
-  const rightRef = useRef<HTMLDivElement>(null);
-  const iconRef = useRef<HTMLDivElement>(null);
-  const releaseTimeout = useRef<number | null>(null);
-  const snapToCenter = useRef<() => void>(() => {});
-
-  // animated state
-  const target = useRef({ x: 0, y: 0 }); // 0..1 normalized distance (0=center, 1=far)
-  const current = useRef({ x: 1, y: 0 });
-  const rafId = useRef<number | null>(null);
-  const reduceMotion = useRef(false);
+  const [glitch, setGlitch] = useState(false);
 
   useEffect(() => {
-    reduceMotion.current = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    const hero = heroRef.current;
-    if (!hero) return;
-
-    let cx = 0;
-    let cy = 0;
-    const measure = () => {
-      const rect = hero.getBoundingClientRect();
-      cx = rect.left + rect.width / 2;
-      cy = rect.top + rect.height / 2;
-    };
-    measure();
-
-    const onMove = (e: PointerEvent) => {
-      if (reduceMotion.current) return;
-
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const pixelDist = Math.hypot(dx, dy);
-
-      // Radial tracking: Hands start moving together within 600px radius
-      const MAX_RADIUS = 600;
-      let dist = pixelDist / MAX_RADIUS;
-      if (dist > 1) dist = 1;
-
-      // Deadzone for perfect touch
-      const DEADZONE = 0.05;
-      if (dist < DEADZONE) {
-        dist = 0;
-      } else {
-        dist = (dist - DEADZONE) / (1 - DEADZONE);
-      }
-
-      target.current.x = dist;
-      target.current.y = (dy / MAX_RADIUS) * 0.3;
-    };
-
-    const onLeave = () => {
-      if (reduceMotion.current) return;
-      target.current.x = 1;
-      target.current.y = 0;
-    };
-
-    const onTouchRelease = () => {
-      if (reduceMotion.current) return;
-      target.current.x = 1;
-      target.current.y = 0;
-    };
-
-    // Shared snap helper
-    snapToCenter.current = () => {
-      if (reduceMotion.current) return;
-      target.current.x = 0;
-      target.current.y = 0;
-      if (releaseTimeout.current) window.clearTimeout(releaseTimeout.current);
-      releaseTimeout.current = window.setTimeout(() => {
-        target.current.x = 1;
-        target.current.y = 0;
-        releaseTimeout.current = null;
-      }, 800);
-    };
-
-    window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerleave", onLeave);
-    window.addEventListener("pointerup", onTouchRelease);
-    window.addEventListener("pointercancel", onTouchRelease);
-    window.addEventListener("resize", measure, { passive: true });
-    window.addEventListener("scroll", measure, { passive: true });
-
-    let lastT = performance.now();
-    const animate = (now: number) => {
-      const dt = Math.min(64, now - lastT);
-      lastT = now;
-
-      // Smoother follow factor (increased slightly for better responsiveness)
-      const k = 1 - Math.exp(-dt / 1000 * 10);
-
-      current.current.x += (target.current.x - current.current.x) * k;
-      current.current.y += (target.current.y - current.current.y) * k;
-
-      const dist = current.current.x; // 0 (center) .. 1 (far)
-      const inv = 1 - dist; // 1 (center) .. 0 (far)
-
-      const pushX = inv * 12; // Reduced from 48
-      const liftY = inv * 12 + current.current.y * 5; // Increased from 2
-      const rotate = inv * 10; // Increased from 2.5
-
-      if (leftRef.current) {
-        leftRef.current.style.transform = `translate3d(${pushX}%, ${-liftY}%, 0) rotate(${rotate}deg)`;
-      }
-      if (rightRef.current) {
-        rightRef.current.style.transform = `translate3d(${-pushX}%, ${-liftY}%, 0) rotate(${-rotate}deg)`;
-      }
-
-      // Icon lighting logic
-      if (iconRef.current) {
-        const glowIntensity = Math.pow(inv, 2); // Quadratic for more dramatic reveal
-        iconRef.current.style.opacity = (0.2 + glowIntensity * 0.8).toString();
-        iconRef.current.style.filter = `drop-shadow(0 0 ${glowIntensity * 20}px rgba(255, 45, 45, 0.8))`;
-        iconRef.current.style.transform = `scale(${0.9 + glowIntensity * 0.2})`;
-      }
-
-      rafId.current = requestAnimationFrame(animate);
-    };
-    rafId.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (rafId.current) cancelAnimationFrame(rafId.current);
-      if (releaseTimeout.current) window.clearTimeout(releaseTimeout.current);
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerleave", onLeave);
-      window.removeEventListener("pointerup", onTouchRelease);
-      window.removeEventListener("pointercancel", onTouchRelease);
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", measure);
-    };
+    const interval = setInterval(() => {
+      setGlitch(true);
+      setTimeout(() => setGlitch(false), 200);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <section
-      id="top"
-      ref={heroRef}
-      className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center pt-28 pb-0 touch-none"
-    >
-      {/* Foreground content */}
-      <div className="relative z-30 container mx-auto text-center px-4 animate-fade-in-up">
-        <div className="inline-block mb-4 px-3 py-1 border border-accent/30 bg-accent/5 rounded text-[10px] uppercase tracking-[0.3em] text-accent animate-pulse font-mono liquid-glass">
-          System Initialized // Neural Link Active
-        </div>
-        <h1 className="font-mono text-[clamp(2.5rem,8vw,7rem)] leading-[1] tracking-tighter uppercase font-black italic">
-          {portfolio.heroHeadline.map((line, i) => (
-            <span key={i} className="block last:text-accent drop-shadow-[0_0_15px_rgba(255,45,45,0.3)]">
-              <Typewriter text={line} startDelay={1000 + i * 1500} />
-            </span>
-          ))}
+    <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 md:px-20 pt-14">
+      {/* Left side: Content */}
+      <div className="w-full md:w-3/5 z-10 space-y-6">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="font-mono text-[#00FFD1]/60 text-[10px] tracking-[0.3em]"
+        >
+          // UNIT_ID: 001 · ACTIVE
+        </motion.div>
+
+        <h1 
+          className={`font-orbitron text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] text-white ${glitch ? 'glitch-wrapper' : ''}`}
+          data-text={portfolio.name}
+        >
+          {portfolio.name}
         </h1>
-        <p className="mt-6 max-w-xl mx-auto text-sm md:text-base font-mono text-muted-foreground/80 leading-relaxed uppercase tracking-wider">
-          <Typewriter text={portfolio.heroSubtitle} startDelay={4000} delay={20} />
-        </p>
-        <a
-          href="#contact"
-          className="pill liquid-glass-accent mt-10 text-sm font-mono uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-1000 fill-mode-both"
-          style={{ animationDelay: '6000ms' }}
-        >
-          {portfolio.heroCta}
-          <ArrowUpRight className="size-4" />
-        </a>
 
-        <button
-          type="button"
-          onClick={() => snapToCenter.current()}
-          className="sr-only focus:not-sr-only focus:fixed focus:left-1/2 focus:-translate-x-1/2 focus:top-24 focus:z-50 focus:pill focus:bg-primary focus:text-primary-foreground"
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="font-mono text-[#00FFD1] text-sm md:text-lg tracking-widest border-l-2 border-[#00FFD1] pl-4 py-1 h-8"
         >
-          Activate neural link
-        </button>
+          <Typewriter text={portfolio.role} startDelay={1500} />
+        </motion.div>
+
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 1 }}
+          className="max-w-lg text-white/60 text-sm md:text-base leading-relaxed"
+        >
+          {portfolio.heroSubtitle}
+        </motion.p>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.5 }}
+          className="flex flex-wrap gap-4 pt-4"
+        >
+          <a
+            href="#projects"
+            className="font-mono text-xs border border-[#00FFD1] px-6 py-3 text-[#00FFD1] hover:bg-[#00FFD1]/10 transition-all hud-corners"
+          >
+            [ VIEW MISSION LOGS ]
+          </a>
+          <a
+            href="#contact"
+            className="font-mono text-xs border border-white/20 px-6 py-3 text-white hover:bg-white/5 transition-all hud-corners"
+          >
+            [ TRANSMIT MESSAGE ]
+          </a>
+        </motion.div>
       </div>
 
-      {/* Reactive Project Icon - Centered between hands vertically */}
-      <div className="absolute left-1/2 bottom-[20%] -translate-x-1/2 translate-y-1/2 z-[5] pointer-events-none">
-        <div 
-          ref={iconRef}
-          className="text-accent"
-          style={{ opacity: 0.2 }}
-        >
-          <LayoutGrid className="size-20 md:size-32" />
+      {/* Right side: Visual */}
+      <div className="w-full md:w-2/5 h-[400px] md:h-screen relative mt-10 md:mt-0">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <HeroOrb />
         </div>
       </div>
 
-      {/* Hands — anchored to bottom edges */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 flex items-end justify-between">
-        <div
-          ref={leftRef}
-          className="w-[75vw] max-w-[950px] -ml-[10vw] will-change-transform"
-          style={{ transform: "translate3d(0, 0, 0)" }}
-        >
-          <img
-            src={handRobot}
-            alt=""
-            width={1280}
-            height={896}
-            className="w-full h-auto select-none opacity-90"
-            draggable={false}
-          />
-        </div>
-        <div
-          ref={rightRef}
-          className="w-[75vw] max-w-[950px] -mr-[10vw] will-change-transform"
-          style={{ transform: "translate3d(0, 0, 0)" }}
-        >
-          <img
-            src={handHuman}
-            alt=""
-            width={1280}
-            height={896}
-            className="w-full h-auto select-none opacity-90"
-            draggable={false}
-          />
-        </div>
+      {/* Scroll indicator */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+        <div className="font-mono text-[8px] text-white/30 tracking-[0.4em]">SCROLL TO EXPLORE</div>
+        <div className="w-[1px] h-12 bg-gradient-to-b from-[#00FFD1] to-transparent animate-pulse" />
       </div>
     </section>
   );

@@ -1,19 +1,19 @@
+import React from 'react';
+
 type Props = {
   index: string;
+  label: string;
   title: string;
-  kicker?: string;
 };
 
-export const SectionHeader = ({ index, title, kicker }: Props) => (
-  <div className="flex items-end justify-between mb-12 border-b border-foreground/15 pb-4">
-    <div className="flex items-baseline gap-4">
-      <span className="text-accent font-mono text-sm">{index}</span>
-      <h2 className="font-display text-4xl md:text-6xl">{title}</h2>
+export const SectionHeader = ({ index, label, title }: Props) => (
+  <div className="mb-12 space-y-2">
+    <div className="font-mono text-[#00FFD1]/60 text-[10px] tracking-[0.3em]">
+      // {index} · {label}
     </div>
-    {kicker && (
-      <span className="hidden md:block text-xs uppercase tracking-[0.3em] text-muted-foreground">
-        {kicker}
-      </span>
-    )}
+    <h2 className="font-orbitron text-2xl md:text-4xl font-bold tracking-tight text-white uppercase">
+      {title}
+    </h2>
+    <div className="w-12 h-1 bg-[#00FFD1]" />
   </div>
 );
