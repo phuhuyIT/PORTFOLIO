@@ -7,6 +7,7 @@ import { Typewriter } from "./Typewriter";
 
 export const Hero = () => {
   const [glitch, setGlitch] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -16,10 +17,25 @@ export const Hero = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      setMousePos({
+        x: (e.clientX - cx) / cx,
+        y: (e.clientY - cy) / cy
+      });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   return (
     <section className="relative min-h-screen flex flex-col md:flex-row items-center justify-center px-6 md:px-20 pt-14">
       {/* Left side: Content */}
-      <div className="w-full md:w-3/5 z-10 space-y-6">
+      <div 
+        className="w-full md:w-3/5 z-10 space-y-6 hero-content"
+      >
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -30,8 +46,11 @@ export const Hero = () => {
         </motion.div>
 
         <h1 
-          className={`font-orbitron text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] text-white ${glitch ? 'glitch-wrapper' : ''}`}
+          className={`font-orbitron text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] text-white hero-name ${glitch ? 'glitch-wrapper' : ''}`}
           data-text={portfolio.name}
+          style={{ 
+            transform: `translate(${mousePos.x * 8}px, ${mousePos.y * 8}px)` 
+          }}
         >
           {portfolio.name}
         </h1>
@@ -62,13 +81,13 @@ export const Hero = () => {
         >
           <a
             href="#projects"
-            className="font-mono text-xs border border-[#00FFD1] px-6 py-3 text-[#00FFD1] hover:bg-[#00FFD1]/10 transition-all hud-corners"
+            className="font-mono text-xs border border-[#00FFD1] px-6 py-3 text-[#00FFD1] hover:bg-[#00FFD1]/10 transition-all hud-corners magnetic"
           >
             [ VIEW MISSION LOGS ]
           </a>
           <a
             href="#contact"
-            className="font-mono text-xs border border-white/20 px-6 py-3 text-white hover:bg-white/5 transition-all hud-corners"
+            className="font-mono text-xs border border-white/20 px-6 py-3 text-white hover:bg-white/5 transition-all hud-corners magnetic"
           >
             [ TRANSMIT MESSAGE ]
           </a>
@@ -76,10 +95,25 @@ export const Hero = () => {
       </div>
 
       {/* Right side: Visual */}
-      <div className="w-full md:w-2/5 h-[400px] md:h-screen relative mt-10 md:mt-0">
-        <div className="absolute inset-0 flex items-center justify-center">
+      <div 
+        className="w-full md:w-2/5 h-[400px] md:h-screen relative mt-10 md:mt-0 hero-visual"
+      >
+        <div 
+          className="absolute inset-0 flex items-center justify-center hero-orb"
+          style={{ 
+            transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px)` 
+          }}
+        >
           <HeroOrb />
         </div>
+        
+        {/* Floating particles layer */}
+        <div 
+          className="absolute inset-0 pointer-events-none hero-particles"
+          style={{ 
+            transform: `translate(${mousePos.x * 35}px, ${mousePos.y * 35}px)` 
+          }}
+        />
       </div>
 
       {/* Scroll indicator */}

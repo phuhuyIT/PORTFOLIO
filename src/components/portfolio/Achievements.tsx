@@ -37,14 +37,16 @@ export const Achievements = () => (
 
             {/* Content Card */}
             <div className={`md:w-1/2 ${i % 2 === 0 ? "md:pr-12 md:text-right" : "md:pl-12"}`}>
-              <div className="space-y-2">
-                <h3 className="font-bold text-lg md:text-xl text-white font-sans uppercase tracking-tight">{e.role}</h3>
-                <div className="font-mono text-[10px] text-[#7B61FF] uppercase tracking-widest">
-                  {e.org}
+              <div className="space-y-4 glass-panel p-6 hover:border-[#00FFD1]/30 transition-all group">
+                <div className="space-y-2">
+                  <h3 className="font-bold text-lg md:text-xl text-white font-sans uppercase tracking-tight group-hover:text-[#00FFD1] transition-colors">{e.role}</h3>
+                  <div className="font-mono text-[10px] text-[#7B61FF] uppercase tracking-widest">
+                    {e.org}
+                  </div>
+                  <p className="text-white/50 text-sm leading-relaxed max-w-md ml-auto mr-auto md:ml-0 md:mr-0">
+                    {e.description}
+                  </p>
                 </div>
-                <p className="text-white/50 text-sm leading-relaxed max-w-md ml-auto mr-auto md:ml-0 md:mr-0">
-                  {e.description}
-                </p>
               </div>
             </div>
           </motion.div>

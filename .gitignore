@@ -25,3 +25,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+My-info.pdf
+.env
+.env.local
+.env.*.local
+src/content/portfolio.private.ts

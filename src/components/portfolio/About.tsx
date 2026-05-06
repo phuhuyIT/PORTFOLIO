@@ -13,13 +13,8 @@ export const About = () => {
       <div className="grid md:grid-cols-2 gap-12 md:gap-24 items-start">
         {/* Left: Photo & Badges */}
         <div className="space-y-8">
-          <div className="relative aspect-[4/5] max-w-md mx-auto md:mx-0 group">
-            {/* HUD Corners */}
-            <div className="absolute -inset-2 border border-[#00FFD1]/20 pointer-events-none" />
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#00FFD1] -translate-x-1 -translate-y-1" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#00FFD1] translate-x-1 translate-y-1" />
-            
-            <div className="w-full h-full overflow-hidden bg-[#1A2535] relative">
+          <div className="relative aspect-[4/5] max-w-md mx-auto md:mx-0 group glass-panel">
+            <div className="w-full h-full overflow-hidden relative">
               {/* Placeholder/Photo with filter */}
               <div className="absolute inset-0 bg-gradient-to-tr from-[#7B61FF]/40 to-[#00FFD1]/40 mix-blend-color" />
               <div className="w-full h-full flex items-center justify-center bg-black/40">
@@ -33,10 +28,38 @@ export const About = () => {
 
           <div className="flex flex-wrap gap-3">
             {["HUMAN", "DEVELOPER", "AI COLLABORATOR"].map((badge) => (
-              <span key={badge} className="px-3 py-1 bg-[#00FFD1]/10 border border-[#00FFD1]/30 text-[#00FFD1] font-mono text-[10px] tracking-widest">
+              <span key={badge} className="px-3 py-1 bg-[#00FFD1]/10 border border-[#00FFD1]/30 text-[#00FFD1] font-mono text-[10px] tracking-widest glass-panel">
                 [ {badge} ]
               </span>
             ))}
+          </div>
+
+          <div className="space-y-4 p-6 glass-panel max-w-md">
+             <div className="font-mono text-[9px] text-white/30 tracking-[0.2em] mb-4 uppercase flex justify-between">
+                <span>// TACTICAL_METRICS</span>
+                <span className="animate-pulse">ONLINE</span>
+             </div>
+             {[
+               { label: "SYNC_STABILITY", value: 94 },
+               { label: "NEURAL_LOAD", value: 38 },
+               { label: "LATENCY_INDEX", value: 12 },
+             ].map((stat) => (
+               <div key={stat.label} className="space-y-1.5">
+                 <div className="flex justify-between font-mono text-[8px] tracking-wider text-white/50">
+                   <span>{stat.label}</span>
+                   <span>{stat.value}%</span>
+                 </div>
+                 <div className="h-1 w-full bg-white/5 overflow-hidden">
+                   <motion.div 
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${stat.value}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    className={`h-full ${stat.value > 80 ? 'bg-[#00FFD1]' : stat.value > 30 ? 'bg-[#7B61FF]' : 'bg-[#FF6B35]'}`}
+                   />
+                 </div>
+               </div>
+             ))}
           </div>
         </div>
 
@@ -55,7 +78,7 @@ export const About = () => {
               LOADED MODULES
             </h3>
             
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {allSkills.map((skill, index) => (
                 <motion.span
                   key={skill}
@@ -63,7 +86,7 @@ export const About = () => {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05, duration: 0.3 }}
-                  className="px-4 py-2 bg-[#020408] border border-[#00FFD1]/20 text-white/80 font-mono text-[11px] hover:border-[#00FFD1] hover:shadow-[0_0_15px_rgba(0,255,209,0.3)] transition-all cursor-default"
+                  className="skill-chip magnetic"
                 >
                   {skill}
                 </motion.span>
