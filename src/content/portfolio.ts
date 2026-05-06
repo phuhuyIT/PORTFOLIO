@@ -1,31 +1,17 @@
-// ============================================================
-//  PUBLIC PORTFOLIO CONFIG (Generic Version)
-//  This version is visible on GitHub. 
-//  To use your private data locally, see the instructions below.
-// ============================================================
 
-export type Project = {
-  title: string;
-  summary: string;
-  tech: string[];
-  liveUrl?: string;
-  repoUrl?: string;
-  image?: string;
-};
 
-export type ExperienceItem = {
-  period: string;
-  role: string;
-  org: string;
-  type: "engineering" | "military";
-  description: string;
-};
+import { Project, ExperienceItem } from "./portfolio.types";
 
-// 1. To use your private data locally:
-//    Uncomment the import below and the 'portfolio' export at the bottom.
-// import { privatePortfolioData } from "./portfolio.private";
+/**
+ * PORTFOLIO DATA CONFIGURATION
+ * 
+ * This file handles the loading of portfolio data. It prioritizes private data
+ * from 'portfolio.private.ts' if it exists locally, but falls back to public
+ * data for deployment (e.g., on Vercel) where the private file is ignored by Git.
+ */
 
-export const portfolio = {
+// 1. Define Public Data (Generic Version for GitHub/Public)
+const publicPortfolioData = {
   // --- Identity ---
   name: "John Doe",
   initials: "JD",
@@ -92,5 +78,9 @@ export const portfolio = {
   },
 };
 
-// 2. Uncomment this to use private data:
-// export const portfolio = privatePortfolioData;
+// 2. Safe Data Export
+// import.meta.glob to optionally load private data without failing the build if it's missing.
+const privateModules = import.meta.glob("./portfolio.private.ts", { eager: true });
+const privatePortfolioData = (Object.values(privateModules)[0] as any)?.privatePortfolioData;
+
+export const portfolio = privatePortfolioData || publicPortfolioData;

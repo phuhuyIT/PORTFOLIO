@@ -1,8 +1,9 @@
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useCallback } from "react";
 import { Nav } from "./Nav";
 import { BootSequence } from "./BootSequence";
 import { CustomCursor } from "./CustomCursor";
 import { CursorTrail } from "./CursorTrail";
+import { LiquidGlassFilter } from "./LiquidGlassFilter";
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,13 +11,9 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [bootComplete, setBootComplete] = useState(false);
-  const [filterSeed, setFilterSeed] = useState(2);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFilterSeed(prev => (prev % 100) + 1);
-    }, 80);
-    return () => clearInterval(interval);
+  const handleBootComplete = useCallback(() => {
+    setBootComplete(true);
   }, []);
 
   useEffect(() => {
@@ -34,7 +31,7 @@ export const Layout = ({ children }: LayoutProps) => {
 
     // Button Energy Charge effect
     const handleMouseMove = (e: MouseEvent) => {
-      const chargeElements = document.querySelectorAll('.btn-charge, button, .nav-link');
+      const chargeElements = document.querySelectorAll('.btn-charge, button, .nav-link, a.magnetic');
       chargeElements.forEach(el => {
         const btn = el as HTMLElement;
         const rect = btn.getBoundingClientRect();
@@ -44,7 +41,7 @@ export const Layout = ({ children }: LayoutProps) => {
         const maxDist = 160;
 
         if (dist < maxDist) {
-          const intensity = 1 - dist / maxDist; // 0 → 1 as cursor gets closer
+          const intensity = 1 - dist / maxDist;
           btn.style.setProperty('--charge', intensity.toString());
         } else {
           btn.style.setProperty('--charge', '0');
@@ -52,28 +49,24 @@ export const Layout = ({ children }: LayoutProps) => {
       });
     };
 
+    const throttledMouseMove = (e: MouseEvent) => {
+      requestAnimationFrame(() => handleMouseMove(e));
+    };
+
     window.addEventListener('click', handleClick);
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', throttledMouseMove);
     return () => {
       window.removeEventListener('click', handleClick);
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousemove', throttledMouseMove);
     };
   }, [bootComplete]);
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden aurora-bg ${bootComplete ? 'bg-grid-pattern' : ''}`}>
-      {/* Liquid Glass SVG Filter */}
-      <svg style={{ display: 'none' }}>
-        <defs>
-          <filter id="liquid-glass">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed={filterSeed} result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
+      <LiquidGlassFilter />
 
       {!bootComplete && (
-        <BootSequence onComplete={() => setBootComplete(true)} />
+        <BootSequence onComplete={handleBootComplete} />
       )}
       
       {bootComplete && (

@@ -142,6 +142,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Liquid Glass System */
+.liquid-glass {
+  filter: url(#liquid-glass);
+}
+
 .glass-panel {
   background: rgba(13, 27, 42, 0.45);
   backdrop-filter: blur(20px) saturate(180%) brightness(1.1);

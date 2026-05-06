@@ -4,7 +4,8 @@ import { SectionHeader } from "./SectionHeader";
 import { motion } from "framer-motion";
 
 export const About = () => {
-  const allSkills = Object.values(portfolio.skills).flat();
+  const skillsData = portfolio.skills || {};
+  const allSkills = Object.values(skillsData).flat();
 
   return (
     <section id="about" className="container mx-auto px-6 py-24 md:py-32 scroll-mt-20">
