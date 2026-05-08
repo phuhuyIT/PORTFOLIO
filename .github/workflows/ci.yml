@@ -1,34 +1,32 @@
- 1 name: CI
-    2
-    3 # Trigger the workflow on push or pull request for the main branch
-    4 on:
-    5   push:
-    6     branches: [ main ]
-    7   pull_request:
-    8     branches: [ main ]
-    9
-   10 jobs:
-   11   build-and-test:
-   12     runs-on: ubuntu-latest
-   13
-   14     steps:
-   15       - name: Checkout code
-   16         uses: actions/checkout@v4
-   17
-   18       - name: Setup Node.js
-   19         uses: actions/setup-node@v4
-   20         with:
-   21           node-version: 20
-   22           cache: 'npm'
-   23
-   24       - name: Install dependencies
-   25         run: npm ci
-   26
-   27       - name: Run Lint
-   28         run: npm run lint
-   29
-   30       - name: Run Tests
-   31         run: npm run test
-   32
-   33       - name: Build Project
-   34         run: npm run build
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run Lint
+        run: npm run lint
+
+      - name: Run Tests
+        run: npm run test
+
+      - name: Build Project
+        run: npm run build
