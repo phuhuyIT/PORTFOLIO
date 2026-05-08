@@ -22,7 +22,8 @@ export const Typewriter = ({
 
   const playClick = () => {
     if (!audioCtx.current) {
-      audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioCtx.current = new AudioContextClass();
     }
     const ctx = audioCtx.current;
     if (ctx.state === "suspended") ctx.resume();

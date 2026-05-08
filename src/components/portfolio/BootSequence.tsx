@@ -4,17 +4,17 @@ interface BootSequenceProps {
   onComplete: () => void;
 }
 
+const bootText = [
+  "AURORA PROTOCOL v2.1",
+  "INITIALIZING NEURAL BRIDGE...",
+  "LOADING SUBJECT PROFILE...",
+  "██████████ 100%",
+  "ACCESS GRANTED"
+];
+
 export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
   const [lines, setLines] = useState<string[]>([]);
   const [isDone, setIsDone] = useState(false);
-
-  const bootText = [
-    "AURORA PROTOCOL v2.1",
-    "INITIALIZING NEURAL BRIDGE...",
-    "LOADING SUBJECT PROFILE...",
-    "██████████ 100%",
-    "ACCESS GRANTED"
-  ];
 
   useEffect(() => {
     let currentLine = 0;

@@ -46,11 +46,9 @@ export const ProjectCard = ({ index, project }: ProjectCardProps) => {
       onClick={handleClick}
       className="min-w-[300px] md:min-w-[400px] glass-panel p-6 flex flex-col gap-4 cursor-pointer snap-center group transition-all duration-300 ease-out relative"
       style={{ 
-        // @ts-ignore
         "--spot-x": `${shine.x}%`,
-        // @ts-ignore
         "--spot-y": `${shine.y}%`
-      }}
+      } as React.CSSProperties}
     >
       {/* Tracked Spotlight */}
       <div 

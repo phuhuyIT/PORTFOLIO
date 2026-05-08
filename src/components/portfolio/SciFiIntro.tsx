@@ -12,7 +12,8 @@ export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
 
   const playSciFiSound = () => {
     if (!audioCtx.current) {
-      audioCtx.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioCtx.current = new AudioContextClass();
     }
     const ctx = audioCtx.current;
     const osc = ctx.createOscillator();
@@ -43,7 +44,7 @@ export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
     setStatus("booting");
     playSciFiSound();
 
-    let start = performance.now();
+    const start = performance.now();
     const duration = 2500;
 
     const animate = (now: number) => {

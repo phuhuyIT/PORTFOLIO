@@ -10,6 +10,7 @@ pnpm-debug.log*
 lerna-debug.log*
 PORTFOLIO_PLAN.md
 
+
 node_modules
 dist
 dist-ssr
@@ -31,3 +32,4 @@ My-info.pdf
 .env.*.local
 src/content/portfolio.private.ts
 .vercel
+lint-report.json

@@ -81,6 +81,6 @@ const publicPortfolioData = {
 // 2. Safe Data Export
 // import.meta.glob to optionally load private data without failing the build if it's missing.
 const privateModules = import.meta.glob("./portfolio.private.ts", { eager: true });
-const privatePortfolioData = (Object.values(privateModules)[0] as any)?.privatePortfolioData;
+const privatePortfolioData = (Object.values(privateModules)[0] as { privatePortfolioData?: typeof publicPortfolioData })?.privatePortfolioData;
 
 export const portfolio = privatePortfolioData || publicPortfolioData;
