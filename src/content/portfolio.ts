@@ -13,24 +13,27 @@ import { Project, ExperienceItem } from "./portfolio.types";
 // 1. Define Public Data (Generic Version for GitHub/Public)
 const publicPortfolioData = {
   // --- Identity ---
-  name: "John Doe",
-  initials: "JD",
-  role: "Software Engineer",
-  status: "Available for Work",
-  email: "hello@example.com",
-  phone: "000-000-0000",
-  location: "City, Country",
+  name: import.meta.env.VITE_NAME || "John Doe",
+  initials: import.meta.env.VITE_INITIALS || "JD",
+  role: import.meta.env.VITE_ROLE || "Software Engineer",
+  status: import.meta.env.VITE_STATUS || "Available for Work",
+  email: import.meta.env.VITE_EMAIL || "hello@example.com",
+  phone: import.meta.env.VITE_PHONE || "000-000-0000",
+  location: import.meta.env.VITE_LOCATION || "City, Country",
 
   // --- Hero ---
-  heroHeadline: ["Building the Future.", "One Line at a Time."],
-  heroSubtitle: "Generic software engineer with a passion for clean code and scalable architecture.",
-  heroCta: "Contact Me",
+  heroHeadline: [
+    import.meta.env.VITE_HERO_HEADLINE_1 || "Building the Future.", 
+    import.meta.env.VITE_HERO_HEADLINE_2 || "One Line at a Time."
+  ],
+  heroSubtitle: import.meta.env.VITE_HERO_SUBTITLE || "Generic software engineer with a passion for clean code and scalable architecture.",
+  heroCta: import.meta.env.VITE_HERO_CTA || "Contact Me",
 
   // --- About ---
-  aboutTitle: "About Me",
+  aboutTitle: import.meta.env.VITE_ABOUT_TITLE || "About Me",
   aboutBody: [
-    "I am a software engineer with experience in building web applications.",
-    "I love solving complex problems and learning new technologies.",
+    import.meta.env.VITE_ABOUT_BODY_1 || "I am a software engineer with experience in building web applications.",
+    import.meta.env.VITE_ABOUT_BODY_2 || "I love solving complex problems and learning new technologies.",
   ],
 
   // --- Tech strip ---
@@ -72,9 +75,9 @@ const publicPortfolioData = {
 
   // --- Socials ---
   socials: {
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    twitter: "https://twitter.com",
+    github: import.meta.env.VITE_GITHUB || "https://github.com",
+    linkedin: import.meta.env.VITE_LINKEDIN || "https://linkedin.com",
+    twitter: import.meta.env.VITE_TWITTER || "https://twitter.com",
   },
 };
 
