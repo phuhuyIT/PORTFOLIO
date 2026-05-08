@@ -10,6 +10,18 @@ import { Project, ExperienceItem } from "./portfolio.types";
  * data for deployment (e.g., on Vercel) where the private file is ignored by Git.
  */
 
+// Helper to parse JSON from env or fallback
+const parseEnvJson = (key: string, fallback: any) => {
+  const val = import.meta.env[key];
+  if (!val) return fallback;
+  try {
+    return JSON.parse(val);
+  } catch (e) {
+    console.warn(`Failed to parse env var ${key}. Using fallback.`);
+    return fallback;
+  }
+};
+
 // 1. Define Public Data (Generic Version for GitHub/Public)
 const publicPortfolioData = {
   // --- Identity ---
@@ -22,25 +34,22 @@ const publicPortfolioData = {
   location: import.meta.env.VITE_LOCATION || "City, Country",
 
   // --- Hero ---
-  heroHeadline: [
-    import.meta.env.VITE_HERO_HEADLINE_1 || "Building the Future.", 
-    import.meta.env.VITE_HERO_HEADLINE_2 || "One Line at a Time."
-  ],
+  heroHeadline: parseEnvJson('VITE_HERO_HEADLINE', ["Building the Future.", "One Line at a Time."]),
   heroSubtitle: import.meta.env.VITE_HERO_SUBTITLE || "Generic software engineer with a passion for clean code and scalable architecture.",
   heroCta: import.meta.env.VITE_HERO_CTA || "Contact Me",
 
   // --- About ---
   aboutTitle: import.meta.env.VITE_ABOUT_TITLE || "About Me",
-  aboutBody: [
-    import.meta.env.VITE_ABOUT_BODY_1 || "I am a software engineer with experience in building web applications.",
-    import.meta.env.VITE_ABOUT_BODY_2 || "I love solving complex problems and learning new technologies.",
-  ],
+  aboutBody: parseEnvJson('VITE_ABOUT_BODY', [
+    "I am a software engineer with experience in building web applications.",
+    "I love solving complex problems and learning new technologies.",
+  ]),
 
   // --- Tech strip ---
-  techStrip: ["React", "TypeScript", "Node.js", "Python", "Docker", "AWS"],
+  techStrip: parseEnvJson('VITE_TECH_STRIP', ["React", "TypeScript", "Node.js", "Python", "Docker", "AWS"]),
 
   // --- Projects ---
-  projects: [
+  projects: parseEnvJson('VITE_PROJECTS', [
     {
       title: "Sample Project One",
       summary: "A brief description of a sample project to showcase your work.",
@@ -53,10 +62,10 @@ const publicPortfolioData = {
       tech: ["Tech C", "Tech D"],
       repoUrl: "https://github.com",
     },
-  ] satisfies Project[],
+  ]) as Project[],
 
   // --- Experience ---
-  experience: [
+  experience: parseEnvJson('VITE_EXPERIENCE', [
     {
       period: "2023 — Present",
       role: "Software Engineer",
@@ -64,14 +73,14 @@ const publicPortfolioData = {
       type: "engineering",
       description: "Worked on various projects involving modern web technologies.",
     },
-  ] satisfies ExperienceItem[],
+  ]) as ExperienceItem[],
 
   // --- Skills ---
-  skills: {
+  skills: parseEnvJson('VITE_SKILLS', {
     Languages: ["JavaScript", "Python"],
     Frameworks: ["React", "Express"],
     Tools: ["Git", "Docker"],
-  },
+  }),
 
   // --- Socials ---
   socials: {
