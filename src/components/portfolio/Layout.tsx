@@ -4,6 +4,7 @@ import { BootSequence } from "./BootSequence";
 import { CustomCursor } from "./CustomCursor";
 import { CursorTrail } from "./CursorTrail";
 import { LiquidGlassFilter } from "./LiquidGlassFilter";
+import { AuroraScene } from "./three/Scene";
 
 interface LayoutProps {
   children: ReactNode;
@@ -64,6 +65,7 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden aurora-bg ${bootComplete ? 'bg-grid-pattern' : ''}`}>
       <LiquidGlassFilter />
+      <AuroraScene />
 
       {!bootComplete && (
         <BootSequence onComplete={handleBootComplete} />
