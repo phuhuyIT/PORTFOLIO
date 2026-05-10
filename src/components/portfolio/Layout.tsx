@@ -20,7 +20,6 @@ export const Layout = ({ children }: LayoutProps) => {
 
   const handleBootComplete = useCallback(() => {
     setBootComplete(true);
-    resumeAudioContext();
   }, []);
 
   useEffect(() => {
@@ -36,6 +35,14 @@ export const Layout = ({ children }: LayoutProps) => {
     window.addEventListener('keydown', resumeAudio);
     window.addEventListener('touchstart', resumeAudio);
 
+    return () => {
+      window.removeEventListener('click', resumeAudio);
+      window.removeEventListener('keydown', resumeAudio);
+      window.removeEventListener('touchstart', resumeAudio);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!bootComplete || isMobile) return;
 
     // Shockwave effect
