@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { resumeAudioContext } from '@/lib/audio';
+import { Volume2, VolumeX } from 'lucide-react';
 
 interface BootSequenceProps {
   onComplete: () => void;
@@ -15,6 +17,12 @@ const bootText = [
 export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
   const [lines, setLines] = useState<string[]>([]);
   const [isDone, setIsDone] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+
+  const handleEnableAudio = async () => {
+    await resumeAudioContext();
+    setAudioEnabled(true);
+  };
 
   useEffect(() => {
     let currentLine = 0;
@@ -48,15 +56,32 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
         )}
       </div>
       
-      <button 
-        onClick={() => {
-          setIsDone(true);
-          setTimeout(onComplete, 500);
-        }}
-        className="absolute top-4 right-4 text-xs font-mono text-[#00FFD1]/60 hover:text-[#00FFD1] transition-colors"
-      >
-        [ SKIP INTRO ]
-      </button>
+      <div className="absolute top-4 right-4 flex items-center gap-4">
+        {!audioEnabled ? (
+          <button 
+            onClick={handleEnableAudio}
+            className="flex items-center gap-2 px-3 py-1.5 border border-[#00FFD1]/30 rounded-sm text-[10px] font-mono text-[#00FFD1]/60 hover:text-[#00FFD1] hover:border-[#00FFD1] transition-all bg-[#00FFD1]/5"
+          >
+            <VolumeX className="w-3 h-3" />
+            [ ENABLE AUDIO ]
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono text-[#00FFD1] opacity-50">
+            <Volume2 className="w-3 h-3" />
+            [ AUDIO ACTIVE ]
+          </div>
+        )}
+
+        <button 
+          onClick={() => {
+            setIsDone(true);
+            setTimeout(onComplete, 500);
+          }}
+          className="text-[10px] font-mono text-[#00FFD1]/40 hover:text-[#00FFD1] transition-colors"
+        >
+          [ SKIP INTRO ]
+        </button>
+      </div>
     </div>
   );
 };

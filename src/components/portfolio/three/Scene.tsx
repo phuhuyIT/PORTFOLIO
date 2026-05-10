@@ -59,13 +59,12 @@ const ScrollCamera = () => {
       easeProgress
     );
 
-    camera.position.lerp(targetPos, 0.05);
+    // Apply subtle drift to target instead of direct increment to avoid infinite drift
+    const t = state.clock.elapsedTime;
+    targetPos.x += Math.sin(t * 0.08) * 0.5;
+    targetPos.y += Math.sin(t * 0.12) * 0.25;
 
-    // Subtle drift
-    const t = performance.now() / 1000;
-    camera.position.x += Math.sin(t * 0.08) * 0.5;
-    camera.position.y += Math.sin(t * 0.12) * 0.25;
-    
+    camera.position.lerp(targetPos, 0.05);
     camera.lookAt(scene.position);
   });
 

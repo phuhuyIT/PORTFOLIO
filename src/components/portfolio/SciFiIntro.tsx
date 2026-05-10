@@ -81,13 +81,25 @@ export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
         </div>
 
         {status === "idle" ? (
-          <button
-            onClick={startBootSequence}
-            className="group relative px-8 py-3 bg-transparent border border-green-500/50 text-green-500 font-mono text-sm tracking-[0.2em] uppercase hover:bg-green-500/10 transition-all duration-300 overflow-hidden"
-          >
-            <span className="relative z-10">Initialize System</span>
-            <div className="absolute inset-0 bg-green-500/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-          </button>
+          <div className="flex flex-col items-center gap-4">
+            <button
+              onClick={startBootSequence}
+              className="group relative px-8 py-3 bg-transparent border border-green-500/50 text-green-500 font-mono text-sm tracking-[0.2em] uppercase hover:bg-green-500/10 transition-all duration-300 overflow-hidden"
+            >
+              <span className="relative z-10">Initialize System</span>
+              <div className="absolute inset-0 bg-green-500/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            </button>
+            <button
+              onClick={() => {
+                resumeAudioContext();
+                setStatus("complete");
+                setTimeout(onComplete, 500);
+              }}
+              className="text-[10px] font-mono text-green-500/40 hover:text-green-500 transition-colors uppercase tracking-widest"
+            >
+              [ Skip Neural Sync ]
+            </button>
+          </div>
         ) : (
           <div className="w-full space-y-4 font-mono text-xs tracking-widest text-green-500/70 uppercase">
             <div className="flex justify-between">

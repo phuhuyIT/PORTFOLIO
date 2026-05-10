@@ -72,11 +72,9 @@ export const AuroraBackground = () => {
     uMouse: { value: new THREE.Vector2(0, 0) },
   }), [size.width, size.height]);
 
-  const startTime = useRef(performance.now() / 1000);
-
   useFrame((state) => {
     if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = (performance.now() / 1000) - startTime.current;
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
       // Mouse is in normalized device coordinates (-1 to +1), map it to 0-1 or pass directly
       materialRef.current.uniforms.uMouse.value.set(state.pointer.x, state.pointer.y);
     }
