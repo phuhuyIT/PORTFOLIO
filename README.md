@@ -1,6 +1,6 @@
-# Code Navigator — Portfolio
+# Portfolio
 
-A bold, B&W halftone portfolio website for Software Engineers and Military professionals. Inspired by minimalist design with a unique interactive hero centerpiece.
+A bold, B&W halftone portfolio website for Software Engineers. Inspired by minimalist design with a unique interactive hero centerpiece.
 
 ## 🚀 Features
 
