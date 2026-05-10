@@ -75,7 +75,15 @@ export const ProjectCard = ({ index, project }: ProjectCardProps) => {
       
       <div className="aspect-video bg-[#0D1B2A] relative overflow-hidden rounded-md border border-white/5">
         {project.image ? (
-          <img src={project.image} alt={project.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+          <img 
+            src={project.image} 
+            alt={project.title} 
+            loading="lazy"
+            decoding="async"
+            width="800"
+            height="500"
+            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" 
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center border border-[#00FFD1]/10">
             <div className="w-12 h-12 border border-[#00FFD1]/20 rounded-full animate-pulse" />

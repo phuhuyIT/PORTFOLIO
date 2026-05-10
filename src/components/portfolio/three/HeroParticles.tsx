@@ -1,6 +1,7 @@
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useContext } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { ScrollContext } from './Scene';
 
 const PARTICLE_COUNT = 3000;
 
@@ -10,42 +11,33 @@ const vertexShader = `
   varying float vDistance;
 
   void main() {
-    // Current position is managed by the buffer attribute directly via CPU for ease,
-    // or we could do GPU morphing. Here we just pass it along.
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
     gl_Position = projectionMatrix * mvPosition;
-
-    // Calculate point size based on distance
     gl_PointSize = (15.0 / -mvPosition.z);
-
-    // Pass distance from origin or mouse for fragment shader if needed
     vDistance = 1.0; 
   }
 `;
 
 // Fragment shader for glowing core particles
 const fragmentShader = `
+  uniform float uOpacity;
   varying float vDistance;
 
   void main() {
-    // Soft circle
     vec2 cxy = 2.0 * gl_PointCoord - 1.0;
     float dist = dot(cxy, cxy);
     if (dist > 1.0) discard;
 
-    // Glow falloff
     float strength = 1.0 - dist;
     strength = pow(strength, 3.0);
 
-    // Color: teal core → violet edge, pulsing
     vec3 teal   = vec3(0.0, 1.0, 0.82);
     vec3 violet = vec3(0.48, 0.38, 1.0);
     vec3 color  = mix(violet, teal, strength);
 
-    // Subtle brightening
     color += vec3(vDistance * 0.1);
 
-    gl_FragColor = vec4(color, strength * 0.85);
+    gl_FragColor = vec4(color, strength * 0.85 * uOpacity);
   }
 `;
 
@@ -69,22 +61,17 @@ function sampleSilhouette(count: number) {
   for (let i = 0; i < count; i++) {
     const isHead = Math.random() > 0.6;
     if (isHead) {
-      // Head
       const r = 0.6 * Math.cbrt(Math.random());
       const theta = Math.random() * 2 * Math.PI;
       const phi = Math.acos(2 * Math.random() - 1);
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) + 1.2;
-      positions[i * 3 + 2] = r * Math.cos(phi) * 0.5; // flatten depth
+      positions[i * 3 + 2] = r * Math.cos(phi) * 0.5;
     } else {
-      // Shoulders/torso
       const x = (Math.random() - 0.5) * 3;
-      const y = Math.random() * -2 + 0.5; // From 0.5 down to -1.5
-      
-      // Slope shoulders
+      const y = Math.random() * -2 + 0.5;
       const yLimit = -Math.abs(x) * 0.5 + 0.5;
       const finalY = y < yLimit ? y : yLimit - Math.random();
-      
       const z = (Math.random() - 0.5) * 0.8;
       positions[i * 3] = x;
       positions[i * 3 + 1] = finalY;
@@ -95,22 +82,42 @@ function sampleSilhouette(count: number) {
 }
 
 export const HeroParticles = () => {
+  const scrollData = useContext(ScrollContext);
   const pointsRef = useRef<THREE.Points>(null);
   const geometryRef = useRef<THREE.BufferGeometry>(null);
   const targetPositions = useMemo(() => sampleSilhouette(PARTICLE_COUNT), []);
   const speeds = useMemo(() => Array.from({ length: PARTICLE_COUNT }, () => 0.01 + Math.random() * 0.03), []);
   
-  // We'll manage current positions directly
-  const positions = useMemo(() => generateRandomCloud(PARTICLE_COUNT, 4), []);
+  const initialPositions = useMemo(() => generateRandomCloud(PARTICLE_COUNT, 4), []);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uOpacity: { value: 1.0 },
+  }), []);
+
   useFrame((state) => {
-    if (!geometryRef.current || !geometryRef.current.attributes.position) return;
+    if (!pointsRef.current || !geometryRef.current || !geometryRef.current.attributes.position) return;
     
+    // Performance: If scrolled past Hero/About, hide and stop calculations
+    const progress = scrollData.current;
+    const isVisible = progress < 0.35;
+    
+    if (pointsRef.current.visible !== isVisible) {
+      pointsRef.current.visible = isVisible;
+    }
+
+    if (!isVisible) return;
+
+    // Fade out as we leave hero
+    if (materialRef.current) {
+      materialRef.current.uniforms.uOpacity.value = THREE.MathUtils.lerp(1, 0, THREE.MathUtils.smoothstep(progress, 0.1, 0.3));
+    }
+
     const posAttribute = geometryRef.current.attributes.position;
     const array = posAttribute.array as Float32Array;
 
-    // Morph logic: move towards target positions
+    // Morph logic
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const i3 = i * 3;
       array[i3]     += (targetPositions[i3]     - array[i3])     * speeds[i];
@@ -119,12 +126,9 @@ export const HeroParticles = () => {
     }
     posAttribute.needsUpdate = true;
 
-    // Slowly rotate the whole particle system
-    if (pointsRef.current) {
-      const time = state.clock.elapsedTime;
-      pointsRef.current.rotation.y = Math.sin(time * 0.1) * 0.2;
-      pointsRef.current.position.y = Math.sin(time * 0.5) * 0.1; // breathe
-    }
+    const time = state.clock.elapsedTime;
+    pointsRef.current.rotation.y = Math.sin(time * 0.1) * 0.2;
+    pointsRef.current.position.y = Math.sin(time * 0.5) * 0.1;
   });
 
   return (
@@ -133,7 +137,7 @@ export const HeroParticles = () => {
         <bufferAttribute
           attach="attributes-position"
           count={PARTICLE_COUNT}
-          array={positions}
+          array={initialPositions}
           itemSize={3}
         />
       </bufferGeometry>
@@ -141,6 +145,7 @@ export const HeroParticles = () => {
         ref={materialRef}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
+        uniforms={uniforms}
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}

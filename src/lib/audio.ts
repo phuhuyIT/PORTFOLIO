@@ -51,6 +51,8 @@ export const sfx = new Howl({
   },
   volume: 0.6,
   preload: false,
+  pool: 5,
+  html5: false,
 });
 
 interface BatteryManager extends EventTarget {
@@ -118,12 +120,22 @@ export const initAudio = async () => {
       synthSfx = new Tone.PolySynth(Tone.Synth, {
         oscillator: { type: 'square' },
         envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 },
+        maxPolyphony: 4,
         volume: -20
       }).toDestination();
       
       sfx.load();
       isInitialized = true;
       console.log("Audio system initialized (State:", Tone.getContext().state, ")");
+
+      // Performance: Suspend context when tab is hidden to save CPU
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          Tone.getContext().suspend();
+        } else if (audioEnabled) {
+          Tone.getContext().resume();
+        }
+      });
     } catch (e) {
       console.error("Error creating audio nodes:", e);
     }

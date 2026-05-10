@@ -1,14 +1,18 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Stars, Preload } from '@react-three/drei';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, createContext, useContext } from 'react';
 import * as THREE from 'three';
 import { AuroraBackground } from './AuroraBackground';
 import { HeroParticles } from './HeroParticles';
 
+// Create a context for scroll progress so child components can optimize themselves
+const ScrollContext = createContext<{ current: number }>({ current: 0 });
+
 const ScrollCamera = () => {
   const { camera, scene } = useThree();
+  const scrollData = useContext(ScrollContext);
   const targetProgress = useRef(0);
-  const currentProgress = useRef(0);
+  const lastRenderTime = useRef(0);
 
   useEffect(() => {
     const onScroll = () => {
@@ -21,7 +25,7 @@ const ScrollCamera = () => {
 
   useFrame((state, delta) => {
     // Lerp progress
-    currentProgress.current += (targetProgress.current - currentProgress.current) * 0.05;
+    scrollData.current += (targetProgress.current - scrollData.current) * 0.05;
 
     // Camera keyframes per section (normalized 0–1 scroll progress)
     const cameraPath = [
@@ -38,7 +42,7 @@ const ScrollCamera = () => {
     let next = cameraPath[cameraPath.length - 1];
     
     for (let i = 0; i < cameraPath.length - 1; i++) {
-      if (currentProgress.current >= cameraPath[i].progress && currentProgress.current <= cameraPath[i+1].progress) {
+      if (scrollData.current >= cameraPath[i].progress && scrollData.current <= cameraPath[i+1].progress) {
         curr = cameraPath[i];
         next = cameraPath[i+1];
         break;
@@ -47,7 +51,7 @@ const ScrollCamera = () => {
 
     let progressBetween = 0;
     if (next.progress > curr.progress) {
-      progressBetween = (currentProgress.current - curr.progress) / (next.progress - curr.progress);
+      progressBetween = (scrollData.current - curr.progress) / (next.progress - curr.progress);
     }
     
     // Smoothstep for easier transition
@@ -59,7 +63,7 @@ const ScrollCamera = () => {
       easeProgress
     );
 
-    // Apply subtle drift to target instead of direct increment to avoid infinite drift
+    // Apply subtle drift
     const t = state.clock.elapsedTime;
     targetPos.x += Math.sin(t * 0.08) * 0.5;
     targetPos.y += Math.sin(t * 0.12) * 0.25;
@@ -73,23 +77,51 @@ const ScrollCamera = () => {
 
 // Custom Star Field to replicate Deep Space Field
 const DeepSpaceField = () => {
-  return <Stars radius={50} depth={50} count={800} factor={4} saturation={0} fade speed={1} />;
+  const scrollData = useContext(ScrollContext);
+  const starsRef = useRef<THREE.Points>(null);
+
+  useFrame(() => {
+    if (!starsRef.current) return;
+    // Fade out stars as we scroll down to focus on content
+    const opacity = Math.max(0.2, 1 - scrollData.current * 1.5);
+    if (starsRef.current.material instanceof THREE.PointsMaterial) {
+      starsRef.current.material.opacity = opacity;
+      starsRef.current.visible = opacity > 0.05;
+    }
+  });
+
+  return (
+    <group ref={starsRef}>
+      <Stars radius={50} depth={50} count={800} factor={4} saturation={0} fade speed={1} />
+    </group>
+  );
 };
 
 export const AuroraScene = () => {
+  const scrollProgress = useRef(0);
+
   return (
     <div className="fixed inset-0 pointer-events-none z-[-1]">
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
-        dpr={Math.min(window.devicePixelRatio, 2)}
-        gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
-      >
-        <AuroraBackground />
-        <HeroParticles />
-        <ScrollCamera />
-        <DeepSpaceField />
-        <Preload all />
-      </Canvas>
+      <ScrollContext.Provider value={scrollProgress}>
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 45 }}
+          dpr={Math.min(window.devicePixelRatio, 2)}
+          gl={{ 
+            antialias: false, 
+            alpha: true, 
+            powerPreference: 'high-performance',
+            preserveDrawingBuffer: false
+          }}
+        >
+          <AuroraBackground />
+          <HeroParticles />
+          <ScrollCamera />
+          <DeepSpaceField />
+          <Preload all />
+        </Canvas>
+      </ScrollContext.Provider>
     </div>
   );
 };
+
+export { ScrollContext };

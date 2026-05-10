@@ -29,6 +29,8 @@ export default defineConfig(({ mode }) => ({
           'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
           'framer-motion': ['framer-motion'],
           'ui-vendor': ['@radix-ui/react-accordion', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip'],
+          'tone': ['tone'],
+          'howler': ['howler'],
         }
       }
     },
