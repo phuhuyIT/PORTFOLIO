@@ -6,6 +6,7 @@ import { CursorTrail } from "./CursorTrail";
 import { LiquidGlassFilter } from "./LiquidGlassFilter";
 import { AuroraScene } from "./three/Scene";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { resumeAudioContext } from "@/lib/audio";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,9 +18,22 @@ export const Layout = ({ children }: LayoutProps) => {
 
   const handleBootComplete = useCallback(() => {
     setBootComplete(true);
+    resumeAudioContext();
   }, []);
 
   useEffect(() => {
+    // Resume audio context on first interaction
+    const resumeAudio = () => {
+      resumeAudioContext();
+      window.removeEventListener('click', resumeAudio);
+      window.removeEventListener('keydown', resumeAudio);
+      window.removeEventListener('touchstart', resumeAudio);
+    };
+
+    window.addEventListener('click', resumeAudio);
+    window.addEventListener('keydown', resumeAudio);
+    window.addEventListener('touchstart', resumeAudio);
+
     if (!bootComplete || isMobile) return;
 
     // Shockwave effect

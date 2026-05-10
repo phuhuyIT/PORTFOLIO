@@ -104,7 +104,9 @@ export const HeroParticles = () => {
   const positions = useMemo(() => generateRandomCloud(PARTICLE_COUNT, 4), []);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
-  useFrame((state) => {
+  const startTime = useRef(performance.now() / 1000);
+
+  useFrame(() => {
     if (!geometryRef.current || !geometryRef.current.attributes.position) return;
     
     const posAttribute = geometryRef.current.attributes.position;
@@ -121,8 +123,9 @@ export const HeroParticles = () => {
 
     // Slowly rotate the whole particle system
     if (pointsRef.current) {
-      pointsRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.1) * 0.2;
-      pointsRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1; // breathe
+      const time = (performance.now() / 1000) - startTime.current;
+      pointsRef.current.rotation.y = Math.sin(time * 0.1) * 0.2;
+      pointsRef.current.position.y = Math.sin(time * 0.5) * 0.1; // breathe
     }
   });
 

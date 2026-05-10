@@ -62,7 +62,7 @@ const ScrollCamera = () => {
     camera.position.lerp(targetPos, 0.05);
 
     // Subtle drift
-    const t = state.clock.getElapsedTime();
+    const t = performance.now() / 1000;
     camera.position.x += Math.sin(t * 0.08) * 0.5;
     camera.position.y += Math.sin(t * 0.12) * 0.25;
     

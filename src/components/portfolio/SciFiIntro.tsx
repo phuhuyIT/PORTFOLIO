@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Terminal } from "lucide-react";
+import { resumeAudioContext } from "@/lib/audio";
 
 interface SciFiIntroProps {
   onComplete: () => void;
@@ -8,14 +9,11 @@ interface SciFiIntroProps {
 export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
   const [status, setStatus] = useState<"idle" | "booting" | "complete">("idle");
   const [progress, setProgress] = useState(0);
-  const audioCtx = useRef<AudioContext | null>(null);
 
-  const playSciFiSound = () => {
-    if (!audioCtx.current) {
-      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      audioCtx.current = new AudioContextClass();
-    }
-    const ctx = audioCtx.current;
+  const playSciFiSound = async () => {
+    const ctx = await resumeAudioContext();
+    if (!ctx || ctx.state !== "running") return;
+
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();

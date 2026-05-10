@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { getAudioContext } from "@/lib/audio";
 
 interface TypewriterProps {
   text: string;
@@ -18,15 +19,10 @@ export const Typewriter = ({
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
-  const audioCtx = useRef<AudioContext | null>(null);
 
   const playClick = () => {
-    if (!audioCtx.current) {
-      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      audioCtx.current = new AudioContextClass();
-    }
-    const ctx = audioCtx.current;
-    if (ctx.state === "suspended") ctx.resume();
+    const ctx = getAudioContext();
+    if (!ctx || ctx.state !== "running") return;
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();

@@ -8,8 +8,10 @@ const NeuralOrb = ({ isMobile }: { isMobile: boolean }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const ringsRef = useRef<THREE.Group>(null);
 
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
+  const startTime = useRef(performance.now() / 1000);
+
+  useFrame(() => {
+    const time = performance.now() / 1000 - startTime.current;
     if (meshRef.current) {
       meshRef.current.rotation.x = time * 0.2;
       meshRef.current.rotation.y = time * 0.3;
