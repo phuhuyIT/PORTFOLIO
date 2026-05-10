@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Suspense, lazy } from "react";
 import { portfolio } from "@/content/portfolio";
 import { motion } from "framer-motion";
+import { playSound } from "@/lib/audio";
 
 import { Typewriter } from "./Typewriter";
 
@@ -82,12 +83,16 @@ export const Hero = () => {
         >
           <a
             href="#projects"
+            onMouseEnter={() => playSound('ui_hover')}
+            onClick={() => playSound('ui_click')}
             className="font-mono text-xs border border-[#00FFD1] px-6 py-3 text-[#00FFD1] hover:bg-[#00FFD1]/10 active:bg-[#00FFD1]/20 active:scale-95 transition-all hud-corners magnetic"
           >
             [ VIEW MISSION LOGS ]
           </a>
           <a
             href="#contact"
+            onMouseEnter={() => playSound('ui_hover')}
+            onClick={() => playSound('ui_click')}
             className="font-mono text-xs border border-white/20 px-6 py-3 text-white hover:bg-white/5 active:bg-white/10 active:scale-95 transition-all hud-corners magnetic"
           >
             [ TRANSMIT MESSAGE ]

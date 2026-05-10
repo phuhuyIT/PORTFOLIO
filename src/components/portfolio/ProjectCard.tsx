@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { playSound } from "@/lib/audio";
 
 interface ProjectCardProps {
   index: number;
@@ -30,6 +31,7 @@ export const ProjectCard = ({ index, project }: ProjectCardProps) => {
   };
 
   const handleClick = (e: React.MouseEvent) => {
+    playSound('card_open');
     // Scan pulse effect before opening
     setIsScanning(true);
     setTimeout(() => {
@@ -43,6 +45,7 @@ export const ProjectCard = ({ index, project }: ProjectCardProps) => {
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => playSound('ui_hover')}
       onClick={handleClick}
       className="min-w-[300px] md:min-w-[400px] glass-panel p-6 flex flex-col gap-4 cursor-pointer snap-center group transition-all duration-300 ease-out relative active:scale-[0.98] md:active:scale-100"
       style={{ 

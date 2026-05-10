@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { resumeAudioContext } from '@/lib/audio';
+import { toggleAudio, playSound, startAmbient } from '@/lib/audio';
 import { Volume2, VolumeX } from 'lucide-react';
 
 interface BootSequenceProps {
@@ -17,11 +17,11 @@ const bootText = [
 export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
   const [lines, setLines] = useState<string[]>([]);
   const [isDone, setIsDone] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioActive, setAudioActive] = useState(false);
 
   const handleEnableAudio = async () => {
-    await resumeAudioContext();
-    setAudioEnabled(true);
+    await toggleAudio(true);
+    setAudioActive(true);
   };
 
   useEffect(() => {
@@ -29,19 +29,30 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
     
     const interval = setInterval(() => {
       setLines(prev => [...prev, bootText[currentLine]]);
+      
+      if (audioActive) {
+        // Increase pitch with each line
+        playSound('boot_beep', 0.1 + (currentLine * 0.05));
+      }
+      
       currentLine++;
       
       if (currentLine >= bootText.length) {
         clearInterval(interval);
+        
+        if (audioActive) {
+          setTimeout(() => playSound('access_granted'), 200);
+        }
+
         setTimeout(() => {
           setIsDone(true);
           setTimeout(onComplete, 800); // Wait for fade out
-        }, 500);
+        }, 800);
       }
-    }, 400);
+    }, 600);
 
     return () => clearInterval(interval);
-  }, [onComplete]);
+  }, [onComplete, audioActive]);
 
   return (
     <div className={`fixed inset-0 z-50 flex flex-col justify-center bg-[#020408] text-[#00FFD1] p-8 font-mono transition-opacity duration-700 ${isDone ? 'opacity-0' : 'opacity-100'}`}>
@@ -57,7 +68,7 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
       </div>
       
       <div className="absolute top-4 right-4 flex items-center gap-4">
-        {!audioEnabled ? (
+        {!audioActive ? (
           <button 
             onClick={handleEnableAudio}
             className="flex items-center gap-2 px-3 py-1.5 border border-[#00FFD1]/30 rounded-sm text-[10px] font-mono text-[#00FFD1]/60 hover:text-[#00FFD1] hover:border-[#00FFD1] transition-all bg-[#00FFD1]/5"

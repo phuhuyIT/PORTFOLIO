@@ -444,3 +444,12 @@ h1, h2, h3, h4, h5, h6 {
     transition-duration: 0.01ms !important;
   }
 }
+
+@keyframes bar-pulse {
+  from { height: 3px; }
+  to   { height: 12px; }
+}
+
+.animate-bar-pulse {
+  animation: bar-pulse 0.8s ease-in-out infinite alternate;
+}

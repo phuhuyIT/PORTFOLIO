@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Terminal } from "lucide-react";
-import { resumeAudioContext } from "@/lib/audio";
+import { initAudio, playSound, toggleAudio } from "@/lib/audio";
 
 interface SciFiIntroProps {
   onComplete: () => void;
@@ -10,37 +10,12 @@ export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
   const [status, setStatus] = useState<"idle" | "booting" | "complete">("idle");
   const [progress, setProgress] = useState(0);
 
-  const playSciFiSound = async () => {
-    const ctx = await resumeAudioContext();
-    if (!ctx || ctx.state !== "running") return;
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(40, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 2);
-
-    filter.type = "lowpass";
-    filter.frequency.setValueAtTime(100, ctx.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 2);
-
-    gain.gain.setValueAtTime(0.01, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.5);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2.5);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 2.5);
-  };
-
-  const startBootSequence = () => {
+  const startBootSequence = async () => {
     setStatus("booting");
-    playSciFiSound();
+    
+    // Initialize audio system on user gesture
+    await toggleAudio(true);
+    playSound('section_transition');
 
     const start = performance.now();
     const duration = 2500;
@@ -54,6 +29,7 @@ export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
         requestAnimationFrame(animate);
       } else {
         setTimeout(() => {
+          playSound('access_granted');
           setStatus("complete");
           setTimeout(onComplete, 500);
         }, 500);
@@ -84,6 +60,7 @@ export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
           <div className="flex flex-col items-center gap-4">
             <button
               onClick={startBootSequence}
+              onMouseEnter={() => playSound('ui_hover')}
               className="group relative px-8 py-3 bg-transparent border border-green-500/50 text-green-500 font-mono text-sm tracking-[0.2em] uppercase hover:bg-green-500/10 transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10">Initialize System</span>
@@ -91,10 +68,10 @@ export const SciFiIntro = ({ onComplete }: SciFiIntroProps) => {
             </button>
             <button
               onClick={() => {
-                resumeAudioContext();
                 setStatus("complete");
                 setTimeout(onComplete, 500);
               }}
+              onMouseEnter={() => playSound('ui_hover')}
               className="text-[10px] font-mono text-green-500/40 hover:text-green-500 transition-colors uppercase tracking-widest"
             >
               [ Skip Neural Sync ]

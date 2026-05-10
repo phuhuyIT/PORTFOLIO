@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAudioContext } from "@/lib/audio";
+import { playSound } from "@/lib/audio";
 
 interface TypewriterProps {
   text: string;
@@ -21,23 +21,7 @@ export const Typewriter = ({
   const [isStarted, setIsStarted] = useState(false);
 
   const playClick = () => {
-    const ctx = getAudioContext();
-    if (!ctx || ctx.state !== "running") return;
-
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = "square";
-    osc.frequency.setValueAtTime(150 + Math.random() * 50, ctx.currentTime);
-    
-    gain.gain.setValueAtTime(0.02, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.05);
+    playSound('boot_beep', 0.2);
   };
 
   useEffect(() => {

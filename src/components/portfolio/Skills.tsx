@@ -1,5 +1,6 @@
 import { portfolio } from "@/content/portfolio";
 import { SectionHeader } from "./SectionHeader";
+import { playSound } from "@/lib/audio";
 
 export const Skills = () => (
   <section id="skills" className="container mx-auto px-4 py-24 md:py-32">
@@ -14,7 +15,9 @@ export const Skills = () => (
             {items.map((s) => (
               <span
                 key={s}
-                className="px-4 py-2 liquid-glass rounded-full text-sm hover:border-accent hover:text-accent transition-colors"
+                onMouseEnter={() => playSound('ui_hover')}
+                onClick={() => playSound('chip_tap')}
+                className="skill-chip cursor-pointer"
               >
                 {s}
               </span>

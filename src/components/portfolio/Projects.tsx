@@ -11,9 +11,16 @@ import {
 } from "@/components/ui/sheet";
 import { ArrowUpRight, Github } from "lucide-react";
 import { ProjectCard } from "./ProjectCard";
+import { playSound } from "@/lib/audio";
 
 export const Projects = () => {
   const projects = portfolio.projects || [];
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      playSound('card_close');
+    }
+  };
   
   return (
     <section id="projects" className="container mx-auto px-6 py-24 md:py-32 scroll-mt-20">
@@ -26,7 +33,7 @@ export const Projects = () => {
 
       <div className="flex overflow-x-auto pb-8 gap-6 no-scrollbar snap-x snap-mandatory">
         {projects.map((p, i) => (
-          <Sheet key={i}>
+          <Sheet key={i} onOpenChange={handleOpenChange}>
             <SheetTrigger asChild>
               <div>
                 <ProjectCard index={i} project={p} />
@@ -71,6 +78,8 @@ export const Projects = () => {
                       href={p.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onMouseEnter={() => playSound('ui_hover')}
+                      onClick={() => playSound('ui_click')}
                       className="flex items-center justify-center gap-2 font-mono text-xs bg-[#00FFD1] text-[#020408] py-4 hover:bg-[#00FFD1]/90 transition-all magnetic"
                     >
                       ACCESS_LIVE_NODE <ArrowUpRight className="size-4" />
@@ -81,6 +90,8 @@ export const Projects = () => {
                       href={p.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onMouseEnter={() => playSound('ui_hover')}
+                      onClick={() => playSound('ui_click')}
                       className="flex items-center justify-center gap-2 font-mono text-xs border border-white/20 text-white py-4 hover:bg-white/5 transition-all magnetic"
                     >
                       <Github className="size-4" /> REPOSITORY

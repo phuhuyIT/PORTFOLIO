@@ -5,7 +5,6 @@ import { CustomCursor } from "./CustomCursor";
 import { CursorTrail } from "./CursorTrail";
 import { LiquidGlassFilter } from "./LiquidGlassFilter";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { resumeAudioContext } from "@/lib/audio";
 
 // Lazy load heavy Three.js component
 const AuroraScene = lazy(() => import("./three/Scene").then(module => ({ default: module.AuroraScene })));
@@ -20,26 +19,6 @@ export const Layout = ({ children }: LayoutProps) => {
 
   const handleBootComplete = useCallback(() => {
     setBootComplete(true);
-  }, []);
-
-  useEffect(() => {
-    // Resume audio context on first interaction
-    const resumeAudio = () => {
-      resumeAudioContext();
-      window.removeEventListener('click', resumeAudio);
-      window.removeEventListener('keydown', resumeAudio);
-      window.removeEventListener('touchstart', resumeAudio);
-    };
-
-    window.addEventListener('click', resumeAudio);
-    window.addEventListener('keydown', resumeAudio);
-    window.addEventListener('touchstart', resumeAudio);
-
-    return () => {
-      window.removeEventListener('click', resumeAudio);
-      window.removeEventListener('keydown', resumeAudio);
-      window.removeEventListener('touchstart', resumeAudio);
-    };
   }, []);
 
   useEffect(() => {
@@ -141,7 +120,7 @@ export const Layout = ({ children }: LayoutProps) => {
             </>
           )}
           
-          <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03] bg-[linear-gradient(transparent_50%,#00FFD1_50%)] bg-[length:100%_4px]" />
+          <div className="fixed inset-0 pointer-events-none z-[40] opacity-[0.03] bg-[linear-gradient(transparent_50%,#00FFD1_50%)] bg-[length:100%_4px]" />
           
           <Nav />
           

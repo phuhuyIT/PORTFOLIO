@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { User, Rocket, Beaker, Database, Send } from "lucide-react";
+import { isAudioEnabled, toggleAudio, setTheme, SectionTheme, playSound } from "@/lib/audio";
 
 const links = [
   { href: "#about", label: "SUBJECT", id: "02", icon: User },
@@ -8,6 +9,42 @@ const links = [
   { href: "#experiments", label: "LAB", id: "04", icon: Beaker },
   { href: "#records", label: "RECORDS", id: "05", icon: Database },
 ];
+
+const AudioToggle = () => {
+  const [enabled, setEnabled] = useState(isAudioEnabled());
+
+  const handleToggle = () => {
+    const nextState = !enabled;
+    setEnabled(nextState);
+    toggleAudio(nextState);
+  };
+
+  return (
+    <button 
+      onClick={handleToggle}
+      onMouseEnter={() => playSound('ui_hover')}
+      className={`flex items-center gap-2 px-3 py-1.5 border transition-all ${
+        enabled ? "border-[#00FFD1] text-[#00FFD1]" : "border-white/20 text-white/40"
+      }`}
+    >
+      <div className="flex items-end gap-[2px] h-3">
+        {[...Array(4)].map((_, i) => (
+          <span 
+            key={i} 
+            className={`w-[2px] bg-current transition-all ${
+              enabled ? "animate-bar-pulse" : "h-[2px]"
+            }`}
+            style={{ 
+              animationDelay: `${i * 0.15}s`,
+              height: enabled ? undefined : '2px'
+            }}
+          />
+        ))}
+      </div>
+      <span className="font-mono text-[10px] tracking-widest">AUDIO</span>
+    </button>
+  );
+};
 
 export const Nav = () => {
   const [activeSection, setActiveSection] = useState("");
@@ -19,8 +56,8 @@ export const Nav = () => {
       setScrolled(window.scrollY > 20);
 
       const sections = links.map(l => l.href.substring(1));
-      // Add records which is not in the links array but referred as section id
       if (!sections.includes("records")) sections.push("records");
+      if (!sections.includes("contact")) sections.push("contact");
       
       let current = "";
 
@@ -33,16 +70,57 @@ export const Nav = () => {
           }
         }
       }
-      setActiveSection(current);
+      
+      if (current && current !== activeSection) {
+        setActiveSection(current);
+        playSound('section_transition');
+        // Map UI section IDs to audio themes
+        const themeMap: Record<string, SectionTheme> = {
+          about: 'about',
+          projects: 'projects',
+          experiments: 'experiments',
+          records: 'achievements',
+          contact: 'contact'
+        };
+        if (themeMap[current]) {
+          setTheme(themeMap[current]);
+        } else if (window.scrollY < 100) {
+          setTheme('hero');
+        }
+      } else if (window.scrollY < 100 && activeSection !== "") {
+        setActiveSection("");
+        setTheme('hero');
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [activeSection]);
+
+  const handleLinkClick = (id: string) => {
+    playSound('nav_select');
+    
+    if (id === 'hero') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
 
   return (
     <>
-      {/* Top Nav - Logo and Contact (Always visible or desktop only) */}
       <nav className={`fixed top-0 left-0 w-full h-14 z-50 px-6 border-b transition-all duration-300 flex items-center justify-between ${
         scrolled 
           ? "bg-[#020408]/60 backdrop-blur-3xl border-[#00FFD1]/20 shadow-[0_4px_32px_rgba(0,0,0,0.4)]" 
@@ -50,7 +128,7 @@ export const Nav = () => {
       }`}>
         <div className="flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-[#00FFD1] animate-pulse" />
-          <a href="#" className="font-orbitron font-bold text-xs md:text-sm tracking-[0.2em] text-[#00FFD1] magnetic">
+          <a href="#" className="font-orbitron font-bold text-xs md:text-sm tracking-[0.2em] text-[#00FFD1] magnetic" onClick={() => handleLinkClick('hero')}>
             AURORA PROTOCOL
           </a>
         </div>
@@ -60,6 +138,8 @@ export const Nav = () => {
             <a
               key={l.href}
               href={l.href}
+              onClick={() => handleLinkClick(l.href.substring(1))}
+              onMouseEnter={() => playSound('ui_hover')}
               className={`font-mono text-[10px] transition-all flex items-center gap-2 group magnetic ${
                 activeSection === l.href.substring(1) ? "text-[#00FFD1]" : "text-white/50 hover:text-[#00FFD1]"
               }`}
@@ -72,14 +152,19 @@ export const Nav = () => {
           ))}
         </div>
 
-        <a
-          href="#contact"
-          className={`font-mono text-[10px] bg-[#00FFD1]/5 border border-[#00FFD1]/30 px-4 py-1.5 hover:bg-[#00FFD1]/20 hover:border-[#00FFD1] transition-all text-[#00FFD1] tracking-wider magnetic ${
-            isMobile ? "hidden" : "block"
-          }`}
-        >
-          TRANSMIT →
-        </a>
+        <div className="flex items-center gap-4">
+          {!isMobile && <AudioToggle />}
+          <a
+            href="#contact"
+            onClick={() => handleLinkClick('contact')}
+            onMouseEnter={() => playSound('ui_hover')}
+            className={`font-mono text-[10px] bg-[#00FFD1]/5 border border-[#00FFD1]/30 px-4 py-1.5 hover:bg-[#00FFD1]/20 hover:border-[#00FFD1] transition-all text-[#00FFD1] tracking-wider magnetic ${
+              isMobile ? "hidden" : "block"
+            }`}
+          >
+            TRANSMIT →
+          </a>
+        </div>
       </nav>
 
       {/* Mobile Bottom Nav */}

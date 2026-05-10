@@ -1,6 +1,7 @@
 import React from "react";
 import { SectionHeader } from "./SectionHeader";
 import { motion } from "framer-motion";
+import { playSound } from "@/lib/audio";
 
 const experiments = [
   { title: "Neural Link v1", description: "Early prototype of browser-based brain-machine interface simulation.", status: "ARCHIVED" },
@@ -25,6 +26,8 @@ export const Experiments = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
+              onMouseEnter={() => playSound('ui_hover')}
+              onClick={() => playSound('ui_click')}
               className={`glass-panel p-6 flex flex-col justify-between gap-6 hover:border-[#00FFD1]/50 transition-all group magnetic ${
                 i === 0 ? "md:col-span-2 md:row-span-1" : ""
               } ${i === 3 ? "md:col-span-1 md:row-span-1" : ""}`}
