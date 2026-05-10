@@ -11,7 +11,7 @@ export const initAudioContext = () => {
   
   if (!sharedAudioCtx) {
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as (typeof window & { webkitAudioContext?: typeof AudioContext })).webkitAudioContext;
       if (AudioContextClass) {
         sharedAudioCtx = new AudioContextClass();
       }
