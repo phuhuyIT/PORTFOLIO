@@ -53,6 +53,14 @@ export const sfx = new Howl({
   preload: false,
 });
 
+interface BatteryManager extends EventTarget {
+  level: number;
+}
+
+interface NavigatorWithBattery extends Navigator {
+  getBattery: () => Promise<BatteryManager>;
+}
+
 // --- Initialization ---
 export const initAudio = async () => {
   if (typeof window === 'undefined') return;
@@ -122,7 +130,7 @@ export const initAudio = async () => {
   }
 
   if ('getBattery' in navigator) {
-    (navigator as any).getBattery().then((battery: any) => {
+    (navigator as unknown as NavigatorWithBattery).getBattery().then((battery) => {
       if (battery.level < 0.2) {
         toggleAudio(false);
       }
