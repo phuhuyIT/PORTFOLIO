@@ -1,12 +1,14 @@
-import { ReactNode, useState, useEffect, useCallback } from "react";
+import { ReactNode, useState, useEffect, useCallback, Suspense, lazy } from "react";
 import { Nav } from "./Nav";
 import { BootSequence } from "./BootSequence";
 import { CustomCursor } from "./CustomCursor";
 import { CursorTrail } from "./CursorTrail";
 import { LiquidGlassFilter } from "./LiquidGlassFilter";
-import { AuroraScene } from "./three/Scene";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { resumeAudioContext } from "@/lib/audio";
+
+// Lazy load heavy Three.js component
+const AuroraScene = lazy(() => import("./three/Scene").then(module => ({ default: module.AuroraScene })));
 
 interface LayoutProps {
   children: ReactNode;
@@ -46,28 +48,60 @@ export const Layout = ({ children }: LayoutProps) => {
       ring.addEventListener('animationend', () => ring.remove());
     };
 
-    // Button Energy Charge effect
+    // Button Energy Charge effect - Cache elements for performance
+    let chargeElements: HTMLElement[] = [];
+    const updateElementsCache = () => {
+      chargeElements = Array.from(document.querySelectorAll('.btn-charge, button, .nav-link, a.magnetic')) as HTMLElement[];
+    };
+    
+    // Initial cache
+    updateElementsCache();
+    
+    // Update cache occasionally as new elements might appear (e.g. after lazy loading)
+    const cacheInterval = setInterval(updateElementsCache, 2000);
+
     const handleMouseMove = (e: MouseEvent) => {
-      const chargeElements = document.querySelectorAll('.btn-charge, button, .nav-link, a.magnetic');
-      chargeElements.forEach(el => {
-        const btn = el as HTMLElement;
+      if (chargeElements.length === 0) return;
+      
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      const maxDist = 160;
+
+      for (let i = 0; i < chargeElements.length; i++) {
+        const btn = chargeElements[i];
         const rect = btn.getBoundingClientRect();
+        
+        // Simple distance check before more expensive calculations
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;
-        const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
-        const maxDist = 160;
+        
+        const dx = mouseX - cx;
+        const dy = mouseY - cy;
+        
+        // Quick check: if mouse is far outside the bounding box + maxDist, skip
+        if (Math.abs(dx) > maxDist + rect.width / 2 || Math.abs(dy) > maxDist + rect.height / 2) {
+          if (btn.style.getPropertyValue('--charge') !== '0') {
+            btn.style.setProperty('--charge', '0');
+          }
+          continue;
+        }
 
+        const dist = Math.hypot(dx, dy);
         if (dist < maxDist) {
           const intensity = 1 - dist / maxDist;
           btn.style.setProperty('--charge', intensity.toString());
         } else {
-          btn.style.setProperty('--charge', '0');
+          if (btn.style.getPropertyValue('--charge') !== '0') {
+            btn.style.setProperty('--charge', '0');
+          }
         }
-      });
+      }
     };
 
+    let rafId: number;
     const throttledMouseMove = (e: MouseEvent) => {
-      requestAnimationFrame(() => handleMouseMove(e));
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => handleMouseMove(e));
     };
 
     window.addEventListener('click', handleClick);
@@ -75,13 +109,17 @@ export const Layout = ({ children }: LayoutProps) => {
     return () => {
       window.removeEventListener('click', handleClick);
       window.removeEventListener('mousemove', throttledMouseMove);
+      clearInterval(cacheInterval);
+      cancelAnimationFrame(rafId);
     };
   }, [bootComplete, isMobile]);
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden aurora-bg ${bootComplete ? 'bg-grid-pattern' : ''}`}>
       <LiquidGlassFilter />
-      <AuroraScene />
+      <Suspense fallback={<div className="fixed inset-0 bg-[#020408] z-[-1]" />}>
+        <AuroraScene />
+      </Suspense>
 
       {!bootComplete && (
         <BootSequence onComplete={handleBootComplete} />

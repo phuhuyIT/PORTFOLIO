@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense, lazy } from "react";
 import { portfolio } from "@/content/portfolio";
-import { HeroOrb } from "./HeroOrb";
 import { motion } from "framer-motion";
 
 import { Typewriter } from "./Typewriter";
+
+const HeroOrb = lazy(() => import("./HeroOrb").then(module => ({ default: module.HeroOrb })));
 
 export const Hero = () => {
   const [glitch, setGlitch] = useState(false);
@@ -104,7 +105,9 @@ export const Hero = () => {
             transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 20}px)` 
           }}
         >
-          <HeroOrb />
+          <Suspense fallback={<div className="w-20 h-20 rounded-full border-2 border-[#00FFD1]/20 animate-pulse" />}>
+            <HeroOrb />
+          </Suspense>
         </div>
         
         {/* Floating particles layer */}

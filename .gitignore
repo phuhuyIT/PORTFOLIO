@@ -73,3 +73,4 @@ lint-report.json
 .agents/skills/ui-ux-pro-max/scripts/__pycache__/core.cpython-312.pyc
 .agents/skills/ui-ux-pro-max/scripts/__pycache__/design_system.cpython-312.pyc
 .agents/skills/documentation-writer/SKILL.md
+.agents/skills/performance-optimization/SKILL.md
