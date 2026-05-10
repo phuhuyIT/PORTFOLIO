@@ -445,6 +445,23 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Performance Tier Overrides */
+[data-tier="C"] .glass-panel,
+[data-tier="D"] .glass-panel {
+  backdrop-filter: none !important;
+  background: rgba(13, 27, 42, 0.9) !important;
+}
+
+[data-tier="D"] * {
+  animation: none !important;
+  transition: none !important;
+}
+
+[data-tier="C"] .aurora-bg::before,
+[data-tier="D"] .aurora-bg::before {
+  animation: none !important;
+}
+
 @keyframes bar-pulse {
   from { height: 3px; }
   to   { height: 12px; }

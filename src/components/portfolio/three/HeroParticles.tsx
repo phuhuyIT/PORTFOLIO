@@ -2,6 +2,7 @@ import { useMemo, useRef, useContext } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { ScrollContext } from './Scene';
+import { usePerformance } from '@/hooks/use-performance';
 
 const PARTICLE_COUNT = 3000;
 
@@ -82,6 +83,7 @@ function sampleSilhouette(count: number) {
 }
 
 export const HeroParticles = () => {
+  const { config } = usePerformance();
   const scrollData = useContext(ScrollContext);
   const pointsRef = useRef<THREE.Points>(null);
   const geometryRef = useRef<THREE.BufferGeometry>(null);
@@ -117,14 +119,19 @@ export const HeroParticles = () => {
     const posAttribute = geometryRef.current.attributes.position;
     const array = posAttribute.array as Float32Array;
 
-    // Morph logic
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    // Morph logic: respect quality level by only updating a subset of particles
+    const activeCount = Math.min(PARTICLE_COUNT, config.particles);
+
+    for (let i = 0; i < activeCount; i++) {
       const i3 = i * 3;
       array[i3]     += (targetPositions[i3]     - array[i3])     * speeds[i];
       array[i3 + 1] += (targetPositions[i3 + 1] - array[i3 + 1]) * speeds[i];
       array[i3 + 2] += (targetPositions[i3 + 2] - array[i3 + 2]) * speeds[i];
     }
     posAttribute.needsUpdate = true;
+
+    // Set draw range to respect quality setting
+    geometryRef.current.setDrawRange(0, activeCount);
 
     const time = state.clock.elapsedTime;
     pointsRef.current.rotation.y = Math.sin(time * 0.1) * 0.2;

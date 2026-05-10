@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { User, Rocket, Beaker, Database, Send } from "lucide-react";
 import { isAudioEnabled, toggleAudio, setTheme, SectionTheme, playSound } from "@/lib/audio";
+import { usePerformance } from "@/hooks/use-performance";
 
 const links = [
   { href: "#about", label: "SUBJECT", id: "02", icon: User },
@@ -11,6 +12,7 @@ const links = [
 ];
 
 const AudioToggle = () => {
+  const { config } = usePerformance();
   const [enabled, setEnabled] = useState(isAudioEnabled());
 
   const handleToggle = () => {
@@ -19,9 +21,12 @@ const AudioToggle = () => {
     toggleAudio(nextState);
   };
 
+  if (config.reducedMotion) return null;
+
   return (
     <button 
       onClick={handleToggle}
+      aria-label={enabled ? "Disable Audio" : "Enable Audio"}
       onMouseEnter={() => playSound('ui_hover')}
       className={`flex items-center gap-2 px-3 py-1.5 border transition-all ${
         enabled ? "border-[#00FFD1] text-[#00FFD1]" : "border-white/20 text-white/40"
@@ -50,6 +55,7 @@ export const Nav = () => {
   const [activeSection, setActiveSection] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const isMobile = useIsMobile();
+  const { config } = usePerformance();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,7 +110,7 @@ export const Nav = () => {
     window.dispatchEvent(new CustomEvent('preload-section', { detail: { id } }));
 
     if (id === 'hero') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: config.reducedMotion ? 'auto' : 'smooth' });
     } else {
       const element = document.getElementById(id);
       if (element) {
@@ -116,7 +122,7 @@ export const Nav = () => {
 
         window.scrollTo({
           top: offsetPosition,
-          behavior: 'smooth'
+          behavior: config.reducedMotion ? 'auto' : 'smooth'
         });
       }
     }
@@ -124,14 +130,22 @@ export const Nav = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full h-14 z-50 px-6 border-b transition-all duration-300 flex items-center justify-between ${
+      <nav 
+        role="navigation"
+        aria-label="Main Navigation"
+        className={`fixed top-0 left-0 w-full h-14 z-50 px-6 border-b transition-all duration-300 flex items-center justify-between ${
         scrolled 
           ? "bg-[#020408]/60 backdrop-blur-3xl border-[#00FFD1]/20 shadow-[0_4px_32px_rgba(0,0,0,0.4)]" 
           : "bg-transparent border-transparent"
       }`}>
         <div className="flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-[#00FFD1] animate-pulse" />
-          <a href="#" className="font-orbitron font-bold text-xs md:text-sm tracking-[0.2em] text-[#00FFD1] magnetic" onClick={() => handleLinkClick('hero')}>
+          <a 
+            href="#" 
+            className="font-orbitron font-bold text-xs md:text-sm tracking-[0.2em] text-[#00FFD1] magnetic" 
+            onClick={() => handleLinkClick('hero')}
+            aria-label="Aurora Protocol - Back to Top"
+          >
             AURORA PROTOCOL
           </a>
         </div>
@@ -161,6 +175,7 @@ export const Nav = () => {
             href="#contact"
             onClick={() => handleLinkClick('contact')}
             onMouseEnter={() => playSound('ui_hover')}
+            aria-label="Contact Section"
             className={`font-mono text-[10px] bg-[#00FFD1]/5 border border-[#00FFD1]/30 px-4 py-1.5 hover:bg-[#00FFD1]/20 hover:border-[#00FFD1] transition-all text-[#00FFD1] tracking-wider magnetic ${
               isMobile ? "hidden" : "block"
             }`}
@@ -172,7 +187,10 @@ export const Nav = () => {
 
       {/* Mobile Bottom Nav */}
       {isMobile && (
-        <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md h-16 z-50 bg-[#020408]/80 backdrop-blur-2xl border border-[#00FFD1]/30 rounded-2xl flex items-center justify-around px-4 shadow-[0_8px_32px_rgba(0,255,209,0.15)]">
+        <nav 
+          role="navigation"
+          aria-label="Mobile Navigation"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md h-16 z-50 bg-[#020408]/80 backdrop-blur-2xl border border-[#00FFD1]/30 rounded-2xl flex items-center justify-around px-4 shadow-[0_8px_32px_rgba(0,255,209,0.15)]">
           {links.map((l) => {
             const Icon = l.icon;
             const isActive = activeSection === l.href.substring(1);
@@ -183,6 +201,7 @@ export const Nav = () => {
                 className={`flex flex-col items-center justify-center gap-1 transition-all ${
                   isActive ? "text-[#00FFD1]" : "text-white/40 active:text-[#00FFD1]/60"
                 }`}
+                aria-label={l.label}
               >
                 <div className={`p-2 rounded-xl transition-all ${isActive ? "bg-[#00FFD1]/10" : ""}`}>
                   <Icon size={18} />
@@ -196,6 +215,7 @@ export const Nav = () => {
             className={`flex flex-col items-center justify-center gap-1 transition-all ${
               activeSection === "contact" ? "text-[#00FFD1]" : "text-white/40 active:text-[#00FFD1]/60"
             }`}
+            aria-label="CONTACT"
           >
             <div className={`p-2 rounded-xl transition-all ${activeSection === "contact" ? "bg-[#00FFD1]/10" : ""}`}>
               <Send size={18} />

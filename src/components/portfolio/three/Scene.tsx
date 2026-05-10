@@ -1,9 +1,11 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Stars, Preload } from '@react-three/drei';
+import { Stars, Preload, useContextBridge } from '@react-three/drei';
 import { useEffect, useRef, useState, createContext, useContext } from 'react';
 import * as THREE from 'three';
 import { AuroraBackground } from './AuroraBackground';
 import { HeroParticles } from './HeroParticles';
+import { PerfMonitor } from './PerfMonitor';
+import { PerformanceContext, usePerformance } from '@/hooks/use-performance';
 
 // Create a context for scroll progress so child components can optimize themselves
 const ScrollContext = createContext<{ current: number }>({ current: 0 });
@@ -99,27 +101,38 @@ const DeepSpaceField = () => {
 
 export const AuroraScene = () => {
   const scrollProgress = useRef(0);
+  const { config } = usePerformance();
+  const ContextBridge = useContextBridge(PerformanceContext);
+
+  if (!config.enableThree) {
+    return (
+      <div className="fixed inset-0 pointer-events-none z-[-1] bg-grid-pattern opacity-20" />
+    );
+  }
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[-1]">
-      <ScrollContext.Provider value={scrollProgress}>
-        <Canvas
-          camera={{ position: [0, 0, 5], fov: 45 }}
-          dpr={Math.min(window.devicePixelRatio, 2)}
-          gl={{ 
-            antialias: false, 
-            alpha: true, 
-            powerPreference: 'high-performance',
-            preserveDrawingBuffer: false
-          }}
-        >
-          <AuroraBackground />
-          <HeroParticles />
-          <ScrollCamera />
-          <DeepSpaceField />
-          <Preload all />
-        </Canvas>
-      </ScrollContext.Provider>
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 45 }}
+        dpr={Math.min(window.devicePixelRatio, 2)}
+        gl={{ 
+          antialias: false, 
+          alpha: true, 
+          powerPreference: 'high-performance',
+          preserveDrawingBuffer: false
+        }}
+      >
+        <ContextBridge>
+          <ScrollContext.Provider value={scrollProgress}>
+            <AuroraBackground />
+            <HeroParticles />
+            <ScrollCamera />
+            <DeepSpaceField />
+            <PerfMonitor />
+            <Preload all />
+          </ScrollContext.Provider>
+        </ContextBridge>
+      </Canvas>
     </div>
   );
 };

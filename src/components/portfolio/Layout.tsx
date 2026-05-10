@@ -5,6 +5,7 @@ import { CustomCursor } from "./CustomCursor";
 import { CursorTrail } from "./CursorTrail";
 import { LiquidGlassFilter } from "./LiquidGlassFilter";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePerformance } from "@/hooks/use-performance";
 
 // Lazy load heavy Three.js component
 const AuroraScene = lazy(() => import("./three/Scene").then(module => ({ default: module.AuroraScene })));
@@ -17,6 +18,7 @@ export const Layout = ({ children }: LayoutProps) => {
   const [bootComplete, setBootComplete] = useState(false);
   const [shouldLoadTier1, setShouldLoadTier1] = useState(false);
   const isMobile = useIsMobile();
+  const { config } = usePerformance();
 
   const handleBootComplete = useCallback(() => {
     setBootComplete(true);
@@ -120,7 +122,7 @@ export const Layout = ({ children }: LayoutProps) => {
       
       {bootComplete && (
         <>
-          {!isMobile && (
+          {!isMobile && !config.reducedMotion && (
             <>
               <CustomCursor />
               <CursorTrail />
@@ -131,11 +133,11 @@ export const Layout = ({ children }: LayoutProps) => {
           
           <Nav />
           
-          <main className="relative z-10">
+          <main className="relative z-10" role="main">
             {children}
           </main>
           
-          <footer className="relative z-10 py-8 px-6 border-t border-white/5 text-center font-mono text-[10px] text-white/30 uppercase tracking-[0.2em]">
+          <footer className="relative z-10 py-8 px-6 border-t border-white/5 text-center font-mono text-[10px] text-white/30 uppercase tracking-[0.2em]" role="contentinfo">
             AURORA PROTOCOL v2.1  ·  SYSTEM_ID: 001  ·  2026
           </footer>
         </>
