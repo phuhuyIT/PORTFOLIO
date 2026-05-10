@@ -13,7 +13,7 @@ const experiments = [
 
 export const Experiments = () => {
   return (
-    <section id="experiments" className="container mx-auto px-6 py-24 md:py-32 scroll-mt-20">
+    <section className="container mx-auto px-6 py-24 md:py-32">
       <SectionHeader index="04" label="LAB_PROTOCOLS" title="EXPERIMENTAL ARTIFACTS" />
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

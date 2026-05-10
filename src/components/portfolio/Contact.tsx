@@ -11,7 +11,7 @@ export const Contact = () => {
   };
 
   return (
-    <section id="contact" className="container mx-auto px-6 py-24 md:py-40 scroll-mt-20">
+    <section className="container mx-auto px-6 py-24 md:py-40">
       <div className="max-w-3xl mx-auto text-center space-y-12">
         <SectionHeader index="06" label="OPEN_CHANNEL" title="INITIATE TRANSMISSION" />
         

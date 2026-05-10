@@ -8,7 +8,7 @@ export const About = () => {
   const allSkills = Object.values(skillsData).flat();
 
   return (
-    <section id="about" className="container mx-auto px-6 py-24 md:py-32 scroll-mt-20">
+    <section className="container mx-auto px-6 py-24 md:py-32">
       <SectionHeader index="02" label="SUBJECT_FILE" title="ABOUT THE ARCHITECT" />
       
       <div className="grid md:grid-cols-2 gap-12 md:gap-24 items-start">

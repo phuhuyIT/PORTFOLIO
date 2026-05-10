@@ -8,7 +8,7 @@ const Experiments = lazy(() => import("@/components/portfolio/Experiments").then
 const Achievements = lazy(() => import("@/components/portfolio/Achievements").then(module => ({ default: module.Achievements })));
 const Contact = lazy(() => import("@/components/portfolio/Contact").then(module => ({ default: module.Contact })));
 
-const SectionWrapper = ({ children, threshold = 0.1 }: { children: React.ReactNode, threshold?: number }) => {
+const SectionWrapper = ({ children, id, threshold = 0.1 }: { children: React.ReactNode, id?: string, threshold?: number }) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold,
@@ -16,7 +16,7 @@ const SectionWrapper = ({ children, threshold = 0.1 }: { children: React.ReactNo
   });
 
   return (
-    <div ref={ref} className="min-h-[20vh]">
+    <div ref={ref} id={id} className="min-h-[20vh] scroll-mt-20">
       {inView ? (
         <Suspense fallback={<div className="h-40 flex items-center justify-center font-mono text-xs text-[#00FFD1]/20 animate-pulse">LOADING_MODULE...</div>}>
           {children}
@@ -30,19 +30,19 @@ const Index = () => {
   return (
     <>
       <Hero />
-      <SectionWrapper>
+      <SectionWrapper id="about">
         <About />
       </SectionWrapper>
-      <SectionWrapper>
+      <SectionWrapper id="projects">
         <Projects />
       </SectionWrapper>
-      <SectionWrapper>
+      <SectionWrapper id="experiments">
         <Experiments />
       </SectionWrapper>
-      <SectionWrapper>
+      <SectionWrapper id="records">
         <Achievements />
       </SectionWrapper>
-      <SectionWrapper>
+      <SectionWrapper id="contact">
         <Contact />
       </SectionWrapper>
     </>

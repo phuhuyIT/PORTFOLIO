@@ -4,7 +4,7 @@ import { SectionHeader } from "./SectionHeader";
 import { motion } from "framer-motion";
 
 export const Achievements = () => (
-  <section id="records" className="container mx-auto px-6 py-24 md:py-32 scroll-mt-20">
+  <section className="container mx-auto px-6 py-24 md:py-32">
     <SectionHeader index="05" label="CLEARANCE_RECORDS" title="VERIFIED ACHIEVEMENTS" />
     
     <div className="relative max-w-4xl mx-auto pl-8 md:pl-0">

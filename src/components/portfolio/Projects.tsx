@@ -23,7 +23,7 @@ export const Projects = () => {
   };
   
   return (
-    <section id="projects" className="container mx-auto px-6 py-24 md:py-32 scroll-mt-20">
+    <section className="container mx-auto px-6 py-24 md:py-32">
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
         <SectionHeader index="03" label="MISSION_LOGS" title="DEPLOYED OPERATIONS" />
         <div className="font-mono text-[10px] text-[#00FFD1] bg-[#00FFD1]/10 px-4 py-2 border border-[#00FFD1]/30 self-start md:self-auto glass-panel">
