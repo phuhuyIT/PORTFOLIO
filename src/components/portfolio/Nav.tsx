@@ -100,6 +100,9 @@ export const Nav = () => {
   const handleLinkClick = (id: string) => {
     playSound('nav_select');
     
+    // Dispatch event to trigger immediate loading of lazy sections
+    window.dispatchEvent(new CustomEvent('preload-section', { detail: { id } }));
+
     if (id === 'hero') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {

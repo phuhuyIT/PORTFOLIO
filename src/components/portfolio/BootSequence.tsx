@@ -4,6 +4,7 @@ import { Volume2, Power } from 'lucide-react';
 
 interface BootSequenceProps {
   onComplete: () => void;
+  onStart?: () => void;
 }
 
 const bootText = [
@@ -14,7 +15,7 @@ const bootText = [
   "ACCESS GRANTED"
 ];
 
-export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
+export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, onStart }) => {
   const [lines, setLines] = useState<string[]>([]);
   const [isDone, setIsDone] = useState(false);
   const [started, setStarted] = useState(false);
@@ -22,6 +23,7 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
   const handleStart = async () => {
     await toggleAudio(true);
     setStarted(true);
+    onStart?.();
   };
 
   useEffect(() => {
@@ -30,10 +32,11 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
       await toggleAudio(true);
       if (isAudioEnabled()) {
         setStarted(true);
+        onStart?.();
       }
     };
     tryAutoplay();
-  }, []);
+  }, [onStart]);
 
   useEffect(() => {
     if (!started) return;

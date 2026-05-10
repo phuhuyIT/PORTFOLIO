@@ -15,10 +15,15 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [bootComplete, setBootComplete] = useState(false);
+  const [shouldLoadTier1, setShouldLoadTier1] = useState(false);
   const isMobile = useIsMobile();
 
   const handleBootComplete = useCallback(() => {
     setBootComplete(true);
+  }, []);
+
+  const handleBootStart = useCallback(() => {
+    setShouldLoadTier1(true);
   }, []);
 
   useEffect(() => {
@@ -103,12 +108,14 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden aurora-bg ${bootComplete ? 'bg-grid-pattern' : ''}`}>
       <LiquidGlassFilter />
-      <Suspense fallback={<div className="fixed inset-0 bg-[#020408] z-[-1]" />}>
-        <AuroraScene />
-      </Suspense>
+      {(shouldLoadTier1 || bootComplete) && (
+        <Suspense fallback={<div className="fixed inset-0 bg-[#020408] z-[-1]" />}>
+          <AuroraScene />
+        </Suspense>
+      )}
 
       {!bootComplete && (
-        <BootSequence onComplete={handleBootComplete} />
+        <BootSequence onComplete={handleBootComplete} onStart={handleBootStart} />
       )}
       
       {bootComplete && (
