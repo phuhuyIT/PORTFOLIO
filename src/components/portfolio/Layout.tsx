@@ -5,6 +5,7 @@ import { CustomCursor } from "./CustomCursor";
 import { CursorTrail } from "./CursorTrail";
 import { LiquidGlassFilter } from "./LiquidGlassFilter";
 import { AuroraScene } from "./three/Scene";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,13 +13,14 @@ interface LayoutProps {
 
 export const Layout = ({ children }: LayoutProps) => {
   const [bootComplete, setBootComplete] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleBootComplete = useCallback(() => {
     setBootComplete(true);
   }, []);
 
   useEffect(() => {
-    if (!bootComplete) return;
+    if (!bootComplete || isMobile) return;
 
     // Shockwave effect
     const handleClick = (e: MouseEvent) => {
@@ -60,7 +62,7 @@ export const Layout = ({ children }: LayoutProps) => {
       window.removeEventListener('click', handleClick);
       window.removeEventListener('mousemove', throttledMouseMove);
     };
-  }, [bootComplete]);
+  }, [bootComplete, isMobile]);
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden aurora-bg ${bootComplete ? 'bg-grid-pattern' : ''}`}>
@@ -73,8 +75,12 @@ export const Layout = ({ children }: LayoutProps) => {
       
       {bootComplete && (
         <>
-          <CustomCursor />
-          <CursorTrail />
+          {!isMobile && (
+            <>
+              <CustomCursor />
+              <CursorTrail />
+            </>
+          )}
           
           <div className="fixed inset-0 pointer-events-none z-[100] opacity-[0.03] bg-[linear-gradient(transparent_50%,#00FFD1_50%)] bg-[length:100%_4px]" />
           

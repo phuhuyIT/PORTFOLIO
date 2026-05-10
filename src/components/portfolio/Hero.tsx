@@ -77,17 +77,17 @@ export const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.5 }}
-          className="flex flex-wrap gap-4 pt-4"
+          className="flex flex-wrap gap-4 pt-4 pb-20 md:pb-0"
         >
           <a
             href="#projects"
-            className="font-mono text-xs border border-[#00FFD1] px-6 py-3 text-[#00FFD1] hover:bg-[#00FFD1]/10 transition-all hud-corners magnetic"
+            className="font-mono text-xs border border-[#00FFD1] px-6 py-3 text-[#00FFD1] hover:bg-[#00FFD1]/10 active:bg-[#00FFD1]/20 active:scale-95 transition-all hud-corners magnetic"
           >
             [ VIEW MISSION LOGS ]
           </a>
           <a
             href="#contact"
-            className="font-mono text-xs border border-white/20 px-6 py-3 text-white hover:bg-white/5 transition-all hud-corners magnetic"
+            className="font-mono text-xs border border-white/20 px-6 py-3 text-white hover:bg-white/5 active:bg-white/10 active:scale-95 transition-all hud-corners magnetic"
           >
             [ TRANSMIT MESSAGE ]
           </a>

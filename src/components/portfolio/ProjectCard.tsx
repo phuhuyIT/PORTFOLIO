@@ -44,7 +44,7 @@ export const ProjectCard = ({ index, project }: ProjectCardProps) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
-      className="min-w-[300px] md:min-w-[400px] glass-panel p-6 flex flex-col gap-4 cursor-pointer snap-center group transition-all duration-300 ease-out relative"
+      className="min-w-[300px] md:min-w-[400px] glass-panel p-6 flex flex-col gap-4 cursor-pointer snap-center group transition-all duration-300 ease-out relative active:scale-[0.98] md:active:scale-100"
       style={{ 
         "--spot-x": `${shine.x}%`,
         "--spot-y": `${shine.y}%`
