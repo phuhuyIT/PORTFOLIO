@@ -11,11 +11,11 @@ import { Project, ExperienceItem } from "./portfolio.types";
  */
 
 // Helper to parse JSON from env or fallback
-const parseEnvJson = (key: string, fallback: any) => {
+const parseEnvJson = <T>(key: string, fallback: T): T => {
   const val = import.meta.env[key];
   if (!val) return fallback;
   try {
-    return JSON.parse(val);
+    return JSON.parse(val) as T;
   } catch (e) {
     console.warn(`Failed to parse env var ${key}. Using fallback.`);
     return fallback;
