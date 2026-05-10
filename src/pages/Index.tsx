@@ -21,8 +21,9 @@ const SectionWrapper = ({ children, id, threshold = 0.1, minHeight = "400px" }: 
   }, [inView]);
 
   useEffect(() => {
-    const handlePreload = (e: any) => {
-      if (e.detail?.id === id) {
+    const handlePreload = (e: Event) => {
+      const customEvent = e as CustomEvent<{ id: string }>;
+      if (customEvent.detail?.id === id) {
         setShouldLoad(true);
       }
     };

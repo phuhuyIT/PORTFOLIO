@@ -1,22 +1,6 @@
-import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-
-export type TierLevel = 'A' | 'B' | 'C' | 'D';
-
-interface QualityConfig {
-  particles: number;
-  blur: number;
-  shadows: boolean;
-  enableThree: boolean;
-  enableAudio: boolean;
-  reducedMotion: boolean;
-}
-
-export const tierConfigs: Record<TierLevel, QualityConfig> = {
-  A: { particles: 3000, blur: 20, shadows: true,  enableThree: true,  enableAudio: true,  reducedMotion: false },
-  B: { particles: 1500, blur: 12, shadows: false, enableThree: true,  enableAudio: true,  reducedMotion: false },
-  C: { particles: 0,    blur: 0,  shadows: false, enableThree: false, enableAudio: false, reducedMotion: false },
-  D: { particles: 0,    blur: 0,  shadows: false, enableThree: false, enableAudio: false, reducedMotion: true  },
-};
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useCallback, ReactNode, useEffect, useState, useContext } from 'react';
+import { TierLevel, QualityConfig, tierConfigs } from './use-performance.types';
 
 interface PerformanceContextType {
   tier: TierLevel;
